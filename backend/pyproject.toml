@@ -1,0 +1,74 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "app"
+dynamic = ["version"]
+description = ''
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Tiffany Truc", email = "ttruc7290@sdsu.edu" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "fastapi[all]",
+  "pre-commit>=4.1.0",
+]
+
+[project.urls]
+Documentation = "https://github.com/U.N. Owen/app#readme"
+Issues = "https://github.com/U.N. Owen/app/issues"
+Source = "https://github.com/U.N. Owen/app"
+
+[tool.hatch.version]
+path = "src/app/__about__.py"
+
+[tool.hatch.envs.default]
+# Default environment setting
+python = "python3.12"
+installer = "uv"
+path = ".venv"
+
+[tool.hatch.envs.default.scripts]
+dev = "fastapi dev {args:src/app/main.py}"
+
+[tool.hatch.envs.types]
+installer = "uv"
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/app tests}"
+
+[tool.coverage.run]
+source_pkgs = ["app", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/app/__about__.py",
+]
+
+[tool.coverage.paths]
+app = ["src/app", "*/app/src/app"]
+tests = ["tests", "*/app/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
