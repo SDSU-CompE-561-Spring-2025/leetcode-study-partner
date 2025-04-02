@@ -12,6 +12,7 @@ license = "MIT"
 keywords = []
 authors = [
   { name = "Tiffany Truc", email = "ttruc7290@sdsu.edu" },
+  { name = "Jackson Keus", email = "jkeus619@gmail.com" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
