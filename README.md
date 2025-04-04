@@ -15,4 +15,6 @@ npm run dev
 
 # Running Back End
 
-Nothing so far!
+```
+hatch shell
+```
