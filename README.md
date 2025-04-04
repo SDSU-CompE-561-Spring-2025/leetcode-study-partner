@@ -20,6 +20,9 @@ npm run dev
 ```
 hatch shell
 
-fastapi dev src/app/main.py
+hatch run dev
 
+#or
+
+fastapi dev src/app/main.py
 ```
