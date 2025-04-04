@@ -15,6 +15,11 @@ npm run dev
 
 # Running Back End
 
+
+## Navigate to the backend directory
 ```
 hatch shell
+
+fastapi dev src/app/main.py
+
 ```
