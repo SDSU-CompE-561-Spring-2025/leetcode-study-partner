@@ -11,8 +11,7 @@ requires-python = ">=3.12"
 license = "MIT"
 keywords = []
 authors = [
-  { name = "Tiffany Truc", email = "ttruc7290@sdsu.edu" },
-  { name = "Jackson Keus", email = "jkeus619@gmail.com" },
+  { name = "Ugur Emre Dogan", email = "ue.dogan@gmail.com" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -26,25 +25,32 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
+  "bandit>=1.8.3",
   "fastapi[all]",
+  "passlib[bcrypt]>=1.7.4",
   "pre-commit>=4.1.0",
+  "pyjwt>=2.10.1",
+  "python-dotenv>=1.0.1",
+  "ruff>=0.9.7",
+  "sqlalchemy>=2.0.38",
 ]
 
 [project.urls]
-Documentation = "https://github.com/U.N. Owen/app#readme"
-Issues = "https://github.com/U.N. Owen/app/issues"
-Source = "https://github.com/U.N. Owen/app"
+Documentation = "https://github.com/SDSU-CompE-561-Spring-2025/leetcode-study-partner#readme"
+Issues = "https://github.com/SDSU-CompE-561-Spring-2025/leetcode-study-partner/issues"
+Source = "https://github.com/SDSU-CompE-561-Spring-2025/leetcode-study-partner"
 
 [tool.hatch.version]
 path = "src/app/__about__.py"
 
 [tool.hatch.envs.default]
-# Default environment setting
-python = "python3.12"
+# Default environment settings
+python = "3.12"
 installer = "uv"
 path = ".venv"
 
 [tool.hatch.envs.default.scripts]
+# Default environment scripts for development and database operations
 dev = "fastapi dev {args:src/app/main.py}"
 
 [tool.hatch.envs.types]
