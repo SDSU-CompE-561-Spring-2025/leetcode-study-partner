@@ -11,7 +11,12 @@ requires-python = ">=3.12"
 license = "MIT"
 keywords = []
 authors = [
-  { name = "Ugur Emre Dogan", email = "ue.dogan@gmail.com" },
+  { name = "Tiffany Truc", email = "tiffanytruc1@gmail.com" },
+  { name = "Jackson Keus", email = "jkeus619@gmail.com" },
+  { name = "Jien Zheng", email = "jienho.zheng@gmail.com" },
+  { name = "Ella Suchikul", email = "isabella.catrice@gmail.com" },
+  { name = "Blaise Duncan", email = "blaiseduncan1@gmail.com" },
+  { name = "Mark Canilang", email = "markbcanilang@gmail.com" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
