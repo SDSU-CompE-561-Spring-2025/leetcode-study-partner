@@ -8,7 +8,7 @@ from app.routes.user import router as user_router
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
-app.include_router(user_router, prefix="/auth", tag=["User"])
+app.include_router(user_router, prefix="/auth", tags=["User"])
 
 @app.get("/")
 async def root():
