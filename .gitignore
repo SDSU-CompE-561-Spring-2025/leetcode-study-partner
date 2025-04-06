@@ -58,7 +58,6 @@ reload.log # if Uvicorn writes logs to file (optional)
 Thumbs.db
 
 # Lock files
-*.lock
 CACHEDIR.TAG
 .cache/
 
