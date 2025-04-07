@@ -2,9 +2,11 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
+
 @router.post("/register")
 def register_user():
     return {"message": "User registered"}
+
 
 @router.post("/token")
 async def login_for_access_token():
