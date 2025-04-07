@@ -35,5 +35,4 @@ repos:
             args: ["-c", "pyproject.toml", "-r", "src"]
             types: [python]
             language: system
-            files: ^backend/.*\.toml$
             pass_filenames: false
