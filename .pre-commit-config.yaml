@@ -37,4 +37,4 @@ repos:
             types: [python]
             language: system
             pass_filenames: false
-            files: ^backend/src/.*\.toml$
+            files: ^backend/src/.*\.*$
