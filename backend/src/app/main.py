@@ -1,8 +1,6 @@
-from datetime import UTC, datetime
 
 from fastapi import FastAPI
 from pydantic import BaseModel, EmailStr, constr
-from sqlalchemy import Boolean, Column, DateTime, Integer, String
 
 from app.core.database import Base, engine
 from app.routes.user import router as user_router
@@ -17,17 +15,7 @@ async def root():
     return {"message": "Hello World"}
 
 
-class User(Base):
-    __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
-    email = Column(String, unique=True, index=True)
-    password_hash = Column(String)
-    is_active = Column(Boolean, default=True)
-    is_verfied = Column(Boolean, default=False)
-    verification_code = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.now(UTC))
 
 
 class UserBase(BaseModel):
