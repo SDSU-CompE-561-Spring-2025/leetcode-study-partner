@@ -1,14 +1,16 @@
-from app.schemas.user import UserResponse
-from fastapi import APIRouter
+from app.schemas.user import UserResponse, UserCreate
+from fastapi import APIRouter, Depends
 
 import app.services.user as user_service
+from app.dependencies import get_db
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 
 
 @router.post("/register", response_model=UserResponse)
-def register_user():
-    new_user = user_service.create_user()
+def register_user(user: UserCreate, db: Session = Depends(get_db)):
+    new_user = user_service.create_user(db=db, user=user)
     return new_user
 
 
