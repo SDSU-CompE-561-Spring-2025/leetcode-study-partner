@@ -1,11 +1,15 @@
+from app.schemas.user import UserResponse
 from fastapi import APIRouter
+
+import app.services.user as user_service
 
 router = APIRouter()
 
 
-@router.post("/register")
+@router.post("/register", response_model=UserResponse)
 def register_user():
-    return {"message": "User registered"}
+    new_user = user_service.create_user()
+    return new_user
 
 
 @router.post("/token")
