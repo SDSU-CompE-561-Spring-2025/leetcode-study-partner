@@ -26,6 +26,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# src
+package-lock.json
+
 # === BACKEND ===
 
 # Virtual environments
@@ -67,8 +70,9 @@ CACHEDIR.TAG
 # === FASTAPI / UVICORN SPECIFIC ===
 
 # Environment files
-.env
-.env.*
+#.env TODO, uncomment once people understand, jsut gonna make this dev easier
+#.env.*
+
 
 # Miscellaneous
 instance/
