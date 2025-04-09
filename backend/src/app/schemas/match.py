@@ -1,51 +1,48 @@
 from datetime import datetime
 from pydantic import BaseModel
-
-# Need ideas
-class MatchCreate(BaseModel):
-    pass
+from uuid import UUID
   
-class MatchHistory(MatchCreate):
-    hostID: uuid.UUID
-    guestID: uuid.UUID
+class MatchHistory(BaseModel):
+    hostID: UUID
+    guestID: UUID
     problemID: int
     status: bool
     duration: int
 
-class MatchDetails(MatchCreate):
-    matchID: uuid.UUID
-    hostID: uuid.UUID
-    guestID: uuid.UUID
-    duration: datetime
+class MatchDetails(BaseModel):
+    matchID: UUID
+    hostID: UUID
+    guestID: UUID
+    duration: int
     
 class MatchStart(BaseModel):
-    matchID: uuid.UUID
+    matchID: UUID
     startTime: datetime
     
 class MatchEnd(BaseModel):
-    matchID: uuid.UUID
+    matchID: UUID
     endTime: datetime
     status: bool
     
     
-class MatchResponseUpdate(BaseModel):
-    matchID: uuid.UUID
-    hostID: uuid.UUID
-    guestID: uuid.UUID
+class MatchUpdate(BaseModel):
+    matchID: UUID
+    hostID: UUID
+    guestID: UUID
     status: bool
-    duration: datetime
+    duration: int
     startTime: datetime
     endTime: datetime
     
     class Config:
         orm_mode = True
     
-class MatchHistoryResponseUpdate(BaseModel):
-    matchID: uuid.UUID
-    hostID: uuid.UUID
-    guestID: uuid.UUID
+class MatchHistoryUpdate(BaseModel):
+    matchID: UUID
+    hostID: UUID
+    guestID: UUID
     status: bool
-    duration: datetime
+    duration: int
     
     class Config:
         orm_mode = True
