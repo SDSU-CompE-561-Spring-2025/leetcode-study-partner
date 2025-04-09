@@ -4,8 +4,8 @@ from app.core.database import Base
 from uuid import UUID
 from sqlalchemy.orm import relationship
 
-class MatchHistory(Base):
-    __tablename__ = "matchHistory"
+class Match(Base):
+    __tablename__ = "match"
     
     matchID: UUID = Column(String, primary_key=True, unique=True, index=True)
     hostID: UUID = Column(String, ForeignKey("users.id"), index=True)
@@ -20,4 +20,4 @@ class MatchHistory(Base):
     
     host = relationship("User", foreign_keys=[hostID])
     guest = relationship("User", foreign_keys=[guestID])
-    problem = relationship("Problem", back_populates="matches", foreign_keys=[problemID])
+    problem = relationship("Problem", back_populates="matches")
