@@ -1,6 +1,8 @@
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, ForeignKey
 from datetime import UTC, datetime
 from app.core.database import Base
+from uuid import UUID
+from sqlalchemy.orm import relationship
 
 class MatchHistory(Base):
     __tablename__ = "matchHistory"
