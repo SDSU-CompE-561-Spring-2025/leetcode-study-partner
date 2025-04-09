@@ -28,7 +28,7 @@ class MatchEnd(BaseModel):
     status: bool
     
     
-class MatchResponse(BaseModel):
+class MatchResponseUpdate(BaseModel):
     matchID: uuid.UUID
     hostID: uuid.UUID
     guestID: uuid.UUID
@@ -40,7 +40,7 @@ class MatchResponse(BaseModel):
     class Config:
         orm_mode = True
     
-class MatchHistoryResponse(BaseModel):
+class MatchHistoryResponseUpdate(BaseModel):
     matchID: uuid.UUID
     hostID: uuid.UUID
     guestID: uuid.UUID
