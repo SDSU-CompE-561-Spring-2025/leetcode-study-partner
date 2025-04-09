@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, constr, Field
 from uuid import UUID
 
 class ProgrammingLanguage(str, Enum):
@@ -31,18 +31,19 @@ class Status(str, Enum):
 
 
 class QueueModel(BaseModel):
-    queue_id: UUID
-    user_id: UUID
-    programming_language: List[ProgrammingLanguage]
-    category: List[str]
+    queue_id: int = Field(..., gt=0)
+    user_id: int = Field(..., gt=0)
+    programming_languages: List[ProgrammingLanguage]
+    categories: List[constr(pattern=r"^[a-zA-Z0-9_]+$")]
     status: Status
     queued_at: datetime
-    resulting_match: UUID | None
+    resulting_match: int | None
 
 
 class QueueModelCreate(BaseModel):
-    user_id: UUID
+    user_id: int = Field(..., gt=0)
     programming_language: List[ProgrammingLanguage]
-    category: List[str]
+    category: List[constr(pattern=r"^[a-zA-Z0-9_]+$")]
     status: Status
+    queued_at : datetime
 
