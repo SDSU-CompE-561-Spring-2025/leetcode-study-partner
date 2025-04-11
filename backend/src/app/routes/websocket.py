@@ -1,5 +1,5 @@
 from app.core.auth import decode_access_token
-from app.schemas.queuemodel import QueueTicket, QueueTicketCreate
+from app.schemas.queue import QueueTicket, QueueTicketCreate
 from fastapi.responses import HTMLResponse
 from app.schemas.user import UserResponse, UserCreate
 from fastapi import APIRouter, Depends, WebSocket
