@@ -47,6 +47,7 @@ class QueueTicketCreate(BaseModel):
     programming_language: List[ProgrammingLanguage]
     categories: List[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$", max_length=32)]]
 
+    # treating this as a catch-all because I don't know what it does 
     model_config = ConfigDict(
         arbitrary_types_allowed=True
     )

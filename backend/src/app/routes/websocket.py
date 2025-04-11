@@ -8,6 +8,10 @@ from sqlalchemy.orm import Session
 
 router = APIRouter()
 
+
+# Temporary HTML for WebSocket
+# This would be handled on the frontend application
+
 html = """
 <!DOCTYPE html>
 <html>
@@ -42,10 +46,12 @@ html = """
 </html>
 """
 
+# Idk seems right
 @router.get("/")
 async def websocket_endpoint():
     return HTMLResponse(html)
 
+# IDK SEEMS RIGHT...?
 @router.websocket("/connect")
 async def websocket_connect(websocket: WebSocket):
     await websocket.accept()
