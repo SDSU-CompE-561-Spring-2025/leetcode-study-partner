@@ -39,6 +39,7 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "ruff" },
     { name = "sqlalchemy" },
+    { name = "websockets" },
 ]
 
 [package.metadata]
@@ -53,6 +54,7 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.1.0" },
     { name = "ruff", specifier = ">=0.9.7" },
     { name = "sqlalchemy", specifier = ">=2.0.38" },
+    { name = "websockets", specifier = ">=15.0.1" },
 ]
 
 [[package]]

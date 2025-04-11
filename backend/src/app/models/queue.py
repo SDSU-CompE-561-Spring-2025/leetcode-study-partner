@@ -1,3 +1,4 @@
+from uuid import UUID
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, Enum, ForeignKey, Table
 from datetime import UTC, datetime
 from app.core.database import Base
