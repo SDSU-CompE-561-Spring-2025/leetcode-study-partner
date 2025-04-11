@@ -7,13 +7,13 @@ from sqlalchemy.orm import relationship
 class Match(Base):
     __tablename__ = "match"
     
-    matchID: UUID = Column(String, primary_key=True, unique=True, index=True)
-    hostID: UUID = Column(String, ForeignKey("users.id"), index=True)
-    guestID: UUID = Column(String, ForeignKey("users.id"), index=True)
+    matchID= Column(String, primary_key=True, unique=True, index=True)
+    hostID= Column(String, ForeignKey("users.id"), index=True)
+    guestID= Column(String, ForeignKey("users.id"), index=True)
     
-    startTime: DateTime = Column(DateTime, default=datetime.now(UTC))
-    endTime: DateTime = Column(DateTime, default=datetime.now(UTC))
-    status: Boolean = Column(Boolean, default=True)
+    startTime: DateTime = Column(DateTime, default=lambda:datetime.now(UTC))
+    endTime: DateTime = Column(DateTime, default=lambda:datetime.now(UTC))
+    status: Boolean = Column(Boolean, default=False)
     duration: Integer = Column(Integer, default=0)
     
     problemID = Column(Integer, ForeignKey("problems.id"), index=True)
