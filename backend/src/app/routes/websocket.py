@@ -1,3 +1,5 @@
+from app.core.auth import decode_access_token
+from app.schemas.queuemodel import QueueTicket, QueueTicketCreate
 from fastapi.responses import HTMLResponse
 from app.schemas.user import UserResponse, UserCreate
 from fastapi import APIRouter, Depends, WebSocket
@@ -20,14 +22,28 @@ html = """
     </head>
     <body>
         <h1>WebSocket Chat</h1>
+        <form action="" onsubmit="sendConnect(event)">
+            <input type="text" id="jwt_token" autocomplete="off", placeholder="JTW Token"/>
+            <button>Connect</button>
+        </form>
         <form action="" onsubmit="sendMessage(event)">
-            <input type="text" id="messageText" autocomplete="off"/>
+            <input type="text" id="messageText" autocomplete="off", placeholder="json"/>
             <button>Send</button>
         </form>
         <ul id='messages'>
         </ul>
         <script>
-            var ws = new WebSocket("ws://localhost:8000/ws/connect");
+            var ws;
+            function sendConnect(event) {
+                var input = document.getElementById("jwt_token")
+                ws = new WebSocket("ws://localhost:8000/ws/connect?token=" + input.value);
+                var messages = document.getElementById('messages')
+                var message = document.createElement('li')
+                var content = document.createTextNode("Connected to WebSocket")
+                message.appendChild(content)
+                messages.appendChild(message)
+                event.preventDefault()
+            }
             ws.onmessage = function(event) {
                 var messages = document.getElementById('messages')
                 var message = document.createElement('li')
@@ -53,9 +69,20 @@ async def websocket_endpoint():
 
 # IDK SEEMS RIGHT...?
 @router.websocket("/connect")
-async def websocket_connect(websocket: WebSocket):
+async def websocket_connect(websocket: WebSocket, db: Session = Depends(dependency=get_db)):
+    token = websocket.query_params.get("token")
+    token_data = decode_access_token(token)
+    user = user_service.get_user_by_username(db, token_data.username)
+    if not user:
+        await websocket.close(code=1008)
+        return
     await websocket.accept()
     while True:
-        data = await websocket.receive_text()
-        print(f"Message text received: {data}")
-        await websocket.send_text(f"Message text received: {data}")
+        preferences = await websocket.receive_json()
+        ticketRequest = QueueTicketCreate(**preferences)
+        ticket = QueueTicket(
+            user_id=user.id,
+            programming_languages=ticketRequest.programming_languages,
+            categories=ticketRequest.categories
+        )
+        print(ticket)

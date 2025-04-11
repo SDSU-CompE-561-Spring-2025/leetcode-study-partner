@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
-from typing import List
-from pydantic import BaseModel, ConfigDict, constr, Field, StringConstraints, Annotated
+from typing import List, Annotated
+from pydantic import BaseModel, ConfigDict, conlist, constr, Field, StringConstraints
 from uuid import UUID
 
 class ProgrammingLanguage(str, Enum):
@@ -33,9 +33,9 @@ class Status(str, Enum):
 class QueueTicket(BaseModel):
     user_id: int = Field(...)
     programming_languages: List[ProgrammingLanguage]
-    categories: List[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$", max_length=32)]]
+    categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$", max_length=32)], min_length=1, max_length=5)
     # status: Status <- probably not needed
-    queued_at: datetime
+    queued_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     resulting_matchID: UUID | None
 
     model_config = ConfigDict(
@@ -44,8 +44,8 @@ class QueueTicket(BaseModel):
 
 
 class QueueTicketCreate(BaseModel):
-    programming_language: List[ProgrammingLanguage]
-    categories: List[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$", max_length=32)]]
+    programming_languages: List[ProgrammingLanguage]
+    categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$", max_length=32)], min_length=1, max_length=5)
 
     # treating this as a catch-all because I don't know what it does 
     model_config = ConfigDict(
