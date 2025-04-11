@@ -23,7 +23,7 @@ html = """
     <body>
         <h1>WebSocket Chat</h1>
         <form action="" onsubmit="sendConnect(event)">
-            <input type="text" id="jwt_token" autocomplete="off", placeholder="JTW Token"/>
+            <input type="text" id="jwt_token" autocomplete="off", placeholder="JWT Token"/>
             <button>Connect</button>
         </form>
         <form action="" onsubmit="sendMessage(event)">
