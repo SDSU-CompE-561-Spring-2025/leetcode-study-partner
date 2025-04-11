@@ -10,5 +10,5 @@ class WebsocketConnection(BaseModel):
     connected_at: datetime = Field(default_factory=datetime.utcnow)
 
     model_config = ConfigDict(
-        arbirtaty_types=True
+        arbitrary_types_allowed=True
     )
