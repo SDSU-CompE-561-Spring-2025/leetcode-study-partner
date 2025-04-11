@@ -8,7 +8,7 @@ class UserData(Base):
     __tablename__ = "user_data"
 
     id = Column(Integer, primary_key = True, index=True)
-    user_id = Column(Integer, ForeignKey("user.id"), unique=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
 
     profile_picutre = Column(String, nullable=True)
     last_login = Column(DateTime, default=datetime.now(UTC))

@@ -1,0 +1,54 @@
+from datetime import datetime, timezone
+from fastapi import HTTPException
+from uuid import UUID
+from app.schemas.match import MatchCreate, MatchStart, MatchEnd, MatchDetails, MatchHistory
+from fastapi import APIRouter, Depends
+from app.models.match import Match
+
+import app.services.match as match_service
+from app.dependencies import get_db
+from sqlalchemy.orm import Session
+
+router = APIRouter()
+
+# Will be removed, only for testing
+@router.delete("/match/{matchID}")
+def delete_match(reqBody: str, db: Session = Depends(get_db)):
+    match = db.query(Match).filter(Match.matchID == reqBody).first()
+    if not match:
+        raise HTTPException(status_code=404, detail="Match not found")
+    db.delete(match)
+    db.commit()
+    return {"message": "Match deleted successfully"}
+
+@router.post("/match/create", response_model=MatchCreate, tags=["Match"])
+def create_match(reqBody: MatchCreate, db: Session = Depends(get_db)):
+    new_match = match_service.create_match(db=db, match=reqBody)
+    return new_match
+
+@router.put("/match/start", response_model=MatchStart, tags=["Match"])
+def start_match(reqBody: str, db: Session = Depends(get_db)):
+    existing = db.query(Match).filter(Match.matchID == reqBody).first()
+    if not existing:
+        raise HTTPException(status_code=404, detail="Match not found")
+    
+    start = match_service.start_match(db=db, match=existing)
+    return start
+
+# TODO: Fix the other endpoints
+
+@router.put("/match/end/{matchID}", response_model=MatchEnd, tags=["Match"])
+def end_match(match: MatchEnd, db: Session = Depends(get_db)):
+    match_over = match_service.end_match(db=db, match=match)
+    return match_over
+
+@router.get("/match/{matchID}", response_model=MatchDetails, tags=["Match"])
+def get_match_details(matchID: str, db: Session = Depends(get_db)):
+    match = match_service.get_match_details(db=db, matchID=matchID)
+    return match
+
+@router.get("/match/history/{userID}", response_model=list[MatchHistory], tags=["Match"])
+def get_match_history(userID: str, db: Session = Depends(get_db)):
+    match_history = match_service.get_match_history(db=db, userID=userID)
+    return match_history
+
