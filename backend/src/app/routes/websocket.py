@@ -83,6 +83,6 @@ async def websocket_connect(websocket: WebSocket, db: Session = Depends(dependen
         ticket = QueueTicket(
             user_id=user.id,
             programming_languages=ticketRequest.programming_languages,
-            categories=ticketRequest.categories
+            categories=ticketRequest.categories,
         )
         print(ticket)
