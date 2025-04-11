@@ -1,3 +1,4 @@
+from app.core.security import verify_password
 from sqlalchemy.orm import Session
 
 from app.core.auth import get_password_hash
@@ -24,3 +25,17 @@ def create_user(db: Session, user: UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def authenticate_user(db: Session, username: str, password: str):
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        return False
+    if not verify_password(password, user.password_hash):
+        return False
+    return user
+
+
+def get_user_by_username(db: Session, username: str):
+    user = db.query(User).filter(User.username == username).first()
+    return user
