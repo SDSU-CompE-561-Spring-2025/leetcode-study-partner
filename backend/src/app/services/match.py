@@ -2,16 +2,17 @@ import uuid
 from datetime import datetime, UTC, timezone
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from uuid import UUID, uuid4
 
 from app.core.config import get_settings
 from app.models.match import Match
-from app.schemas.match import MatchCreate, MatchDetails, MatchHistory, MatchStart
+from app.schemas.match import MatchCreate, MatchDetails, MatchHistory, MatchStart, MatchEnd, MatchResponse
 
 settings = get_settings()
 
 # MATCH CRUD
-
+# CREATE
 def create_match(db: Session, match: MatchCreate):
     new_match_id: UUID = uuid.uuid4()
     
@@ -36,6 +37,7 @@ def create_match(db: Session, match: MatchCreate):
         "matchID": new_match_id} )
     return new_match
 
+# UPDATE - Start match
 def start_match(db: Session, match: MatchStart):
     match.startTime = datetime.now(timezone.utc)
     db.commit()
@@ -43,24 +45,46 @@ def start_match(db: Session, match: MatchStart):
     return match
 
 # TODO: Fix CRUD for endmatch, match history
-def end_match(db: Session, match: MatchHistory):
-    end = datetime.now(timezone.utc)
-    start = match.startTime
-    db_match = Match(
-        match_id=match.matchID,
-        user_id=match.hostID,
-        opponent_id=match.guestID,
-        problem_id=match.problemID,
-        end_time=end,
-        duration=(end - start).total_seconds()
-    )
-    db.add(db_match)
+# def end_match(db: Session, match: MatchHistory):
+#     end = datetime.now(timezone.utc)
+#     start = match.startTime
+#     db_match = Match(
+#         match_id=match.matchID,
+#         user_id=match.hostID,
+#         opponent_id=match.guestID,
+#         problem_id=match.problemID,
+#         end_time=end,
+#         duration=(end - start).total_seconds()
+#     )
+#     db.add(db_match)
+#     db.commit()
+#     db.refresh(db_match)
+#     return db_match
+
+# Testing end_match CRUD
+# UPDATE - End match
+def end_match(db: Session, matchID: str, match_data: MatchEnd):
+    db_match = db.query(Match).filter(Match.matchID == matchID).first()
+    if not db_match:
+        raise HTTPException(status_code=404, detail="Match not found")
+
+    db_match.endTime = datetime.now(timezone.utc)
+    db_match.status = match_data.status
+    db_match.duration = int((db_match.endTime - db_match.startTime).total_seconds())
+
     db.commit()
     db.refresh(db_match)
     return db_match
 
+# READ - Get match details
 def get_match_details(db: Session, reqBody: str):
     return db.query(Match).filter(Match.matchID == reqBody).first()
 
+# READ - Get all matches for a user
 def get_all_matches(db: Session, reqBody: str):
-    return db.query(Match).filter(Match.hostID == reqBody | Match.guestID == reqBody).all()
+    return db.query(Match).filter(
+        or_(
+            Match.hostID == reqBody,
+            Match.guestID == reqBody
+        )
+    ).all()

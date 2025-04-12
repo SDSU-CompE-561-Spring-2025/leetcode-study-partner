@@ -7,16 +7,34 @@ class MatchCreate(BaseModel):
     guestID: UUID
     problemID: int
 
+class MatchResponse(BaseModel):
+    matchID: UUID
+    hostID: UUID
+    guestID: UUID
+    problemID: int
+
+    class Config:
+        from_attributes = True
+
 class MatchStart(BaseModel):
     matchID: UUID
     startTime: datetime
 
 class MatchEnd(BaseModel):
     matchID: UUID
-    endTime: datetime
-    duration: int
+    # endTime: datetime
+    # duration: int
     status: bool
     
+class MatchEndResponse(BaseModel):
+    matchID: UUID
+    status: bool
+    endTime: datetime
+    duration: int
+
+    class Config:
+        from_attributes = True
+
 class MatchHistory(BaseModel):
     matchID: UUID
     hostID: UUID

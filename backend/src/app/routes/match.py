@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from fastapi import HTTPException
 from uuid import UUID
-from app.schemas.match import MatchCreate, MatchStart, MatchEnd, MatchDetails, MatchHistory
+from app.schemas.match import MatchCreate, MatchStart, MatchEnd, MatchDetails, MatchHistory, MatchResponse, MatchEndResponse
 from fastapi import APIRouter, Depends
 from app.models.match import Match
 
@@ -21,7 +21,8 @@ def delete_match(reqBody: str, db: Session = Depends(get_db)):
     db.commit()
     return {"message": "Match deleted successfully"}
 
-@router.post("/match/create", response_model=MatchCreate, tags=["Match"])
+
+@router.post("/match/create", response_model=MatchResponse, tags=["Match"])
 def create_match(reqBody: MatchCreate, db: Session = Depends(get_db)):
     new_match = match_service.create_match(db=db, match=reqBody)
     return new_match
@@ -37,9 +38,9 @@ def start_match(reqBody: str, db: Session = Depends(get_db)):
 
 # TODO: Fix the other endpoints: match end and match history
 
-@router.put("/match/end/{matchID}", response_model=MatchEnd, tags=["Match"])
-def end_match(match: MatchEnd, db: Session = Depends(get_db)):
-    match_over = match_service.end_match(db=db, match=match)
+@router.put("/match/end/{matchID}", response_model=MatchEndResponse, tags=["Match"])
+def end_match(matchID:str, match: MatchEnd, db: Session = Depends(get_db)):
+    match_over = match_service.end_match(db=db, matchID=matchID, match_data=match)
     return match_over
 
 @router.get("/match/{matchID}", response_model=MatchDetails, tags=["Match"])
@@ -51,8 +52,8 @@ def get_match_details(reqBody: str, db: Session = Depends(get_db)):
 
 @router.get("/match/history/{userID}", response_model=list[MatchHistory], tags=["Match"])
 def get_match_history(reqBody: str, db: Session = Depends(get_db)):
-    user = match_service.get_all_matches(db=db, reqBody=reqBody)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+    matches = match_service.get_all_matches(db=db, reqBody=reqBody)
+    if not matches:
+        raise HTTPException(status_code=404, detail="No match history found")
+    return matches
 
