@@ -2,7 +2,7 @@ from datetime import datetime
 from pydantic import BaseModel, constr, EmailStr, Field
 
 class Problem(BaseModel):
-    lc_id: int
+    id: int
     problem_link: str
     methods_video_link: str
     category: str
