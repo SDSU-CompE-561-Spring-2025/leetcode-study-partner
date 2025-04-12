@@ -11,7 +11,7 @@ class UserCreate(UserBase):
 #TODO add custom validator
 
 class User(UserBase):
-    id: int = Field(..., gt=0)
+    id: str = Field(...)
     username: constr(min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_]+$")
     email: EmailStr
     created_at: datetime
@@ -20,7 +20,7 @@ class User(UserBase):
         from_attributes = True
 
 class UserResponse(BaseModel):
-    id: int = Field(..., gt=0)
+    id: str = Field(...)
     username: constr(min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_]+$")
     email: EmailStr
     created_at: datetime
