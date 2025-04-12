@@ -35,7 +35,7 @@ def start_match(reqBody: str, db: Session = Depends(get_db)):
     start = match_service.start_match(db=db, match=existing)
     return start
 
-# TODO: Fix the other endpoints
+# TODO: Fix the other endpoints: match end and match history
 
 @router.put("/match/end/{matchID}", response_model=MatchEnd, tags=["Match"])
 def end_match(match: MatchEnd, db: Session = Depends(get_db)):
@@ -43,12 +43,16 @@ def end_match(match: MatchEnd, db: Session = Depends(get_db)):
     return match_over
 
 @router.get("/match/{matchID}", response_model=MatchDetails, tags=["Match"])
-def get_match_details(matchID: str, db: Session = Depends(get_db)):
-    match = match_service.get_match_details(db=db, matchID=matchID)
-    return match
+def get_match_details(reqBody: str, db: Session = Depends(get_db)):
+    details = match_service.get_match_details(db=db, match_id=reqBody)
+    if not details:
+        raise HTTPException(status_code=404, detail="Match not found")
+    return details
 
 @router.get("/match/history/{userID}", response_model=list[MatchHistory], tags=["Match"])
-def get_match_history(userID: str, db: Session = Depends(get_db)):
-    match_history = match_service.get_match_history(db=db, userID=userID)
-    return match_history
+def get_match_history(reqBody: str, db: Session = Depends(get_db)):
+    user = match_service.get_match_details(db=db, reqBody=reqBody)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
