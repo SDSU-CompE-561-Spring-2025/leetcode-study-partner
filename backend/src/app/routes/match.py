@@ -51,7 +51,7 @@ def get_match_details(reqBody: str, db: Session = Depends(get_db)):
 
 @router.get("/match/history/{userID}", response_model=list[MatchHistory], tags=["Match"])
 def get_match_history(reqBody: str, db: Session = Depends(get_db)):
-    user = match_service.get_match_details(db=db, reqBody=reqBody)
+    user = match_service.get_all_matches(db=db, reqBody=reqBody)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
