@@ -10,7 +10,7 @@ class Rating(Base):
 
     id = Column(Integer, primary_key = True, index = True)
 
-    match_id = Column(Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
+    match_id = Column(String, primary_key=True, autoincrement=True, unique=True, nullable=False)
 
     to_host_rating = Column(Integer, nullable=False)
     to_guest_rating = Column(Integer, nullable=False)
@@ -24,8 +24,8 @@ class Rating(Base):
     elapsed_time = Column(Interval, nullable=False)
     review_updated_at = Column(DateTime, default=lambda:datetime.now(UTC), onupdate=lambda:datetime.now(UTC))
 
-    host_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    guest_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    host_id = Column(String, ForeignKey("users.id"), nullable=False)
+    guest_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     host = relationship("User", foreign_keys=[host_id])
     guest = relationship("User", foreign_keys=[guest_id])

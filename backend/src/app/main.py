@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 
 from app.core.database import Base, engine
-from app.routes import api_router
+from app.routes import api_router 
+from app.routes.match import router as match_router
 from app.routes.websocket import router as websocket_router
 
 Base.metadata.create_all(bind=engine)
