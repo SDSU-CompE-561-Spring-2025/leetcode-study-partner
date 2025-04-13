@@ -3,6 +3,8 @@ from sqlalchemy import Boolean, Column, DateTime, String
 from datetime import UTC, datetime
 from app.core.database import Base
 
+from sqlalchemy.orm import relationship
+
 class User(Base):
     __tablename__ = "users"
 
@@ -14,3 +16,8 @@ class User(Base):
     is_verfied = Column(Boolean, default=True)
     verification_code = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now(UTC))
+
+    user_data = relationship("UserData", back_populates="user")
+
+    reviews_as_host = relationship("Rating", foreign_keys="Rating.host_id", back_populates="host")
+    reviews_as_guest = relationship("Rating", foreign_keys="Rating.guest_id", back_populates="guest")

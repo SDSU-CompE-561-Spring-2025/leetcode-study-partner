@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, ForeignKey
+from sqlalchemy import Boolean, Column, DateTime, Index, Integer, String, ForeignKey
 from datetime import UTC, datetime
 from app.core.database import Base
 from sqlalchemy.orm import relationship, backref
@@ -17,6 +17,11 @@ class Match(Base):
 
     problemID = Column(Integer, ForeignKey("problems.id"), index=True)
 
-    host = relationship("User", foreign_keys=[hostID])
-    guest = relationship("User", foreign_keys=[guestID])
+    host = relationship("User", foreign_keys=[hostID], backref="matches_as_host")
+    guest = relationship("User", foreign_keys=[guestID], backref="matches_as_guest")
     problem = relationship("Problem", backref=backref("matches"))
+
+    __table_args__ = (
+        Index('ix_matches_host_guest', 'hostID', 'guestID'),
+        Index('ix_matches_guest_host', 'guestID', 'hostID'),
+    )
