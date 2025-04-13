@@ -22,8 +22,6 @@ class MatchStart(BaseModel):
 
 class MatchEnd(BaseModel):
     matchID: UUID
-    # endTime: datetime
-    # duration: int
     status: bool
     
 class MatchEndResponse(BaseModel):

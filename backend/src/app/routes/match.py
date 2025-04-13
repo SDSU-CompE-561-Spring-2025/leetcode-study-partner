@@ -33,10 +33,10 @@ def start_match(reqBody: str, db: Session = Depends(get_db)):
     if not existing:
         raise HTTPException(status_code=404, detail="Match not found")
     
-    start = match_service.start_match(db=db, match=existing)
+    start = match_service.start_match(db=db, matchID=reqBody)
     return start
 
-# TODO: Fix the other endpoints: match end and match history
+# TODO: Fix the other endpoints: match end
 
 @router.put("/match/end/{matchID}", response_model=MatchEndResponse, tags=["Match"])
 def end_match(matchID:str, match: MatchEnd, db: Session = Depends(get_db)):

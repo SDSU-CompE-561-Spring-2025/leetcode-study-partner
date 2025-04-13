@@ -38,35 +38,28 @@ def create_match(db: Session, match: MatchCreate):
     return new_match
 
 # UPDATE - Start match
-def start_match(db: Session, match: MatchStart):
-    match.startTime = datetime.now(timezone.utc)
+def start_match(db: Session, matchID: str):
+    db_match = db.query(Match).filter(Match.matchID == matchID).first()
+    if not db_match:
+        raise HTTPException(status_code=404, detail="Match not found")
+
+    db_match.startTime = datetime.now(timezone.utc) 
     db.commit()
-    db.refresh(match) 
-    return match
+    db.refresh(db_match)
+    return db_match
 
-# TODO: Fix CRUD for endmatch, match history
-# def end_match(db: Session, match: MatchHistory):
-#     end = datetime.now(timezone.utc)
-#     start = match.startTime
-#     db_match = Match(
-#         match_id=match.matchID,
-#         user_id=match.hostID,
-#         opponent_id=match.guestID,
-#         problem_id=match.problemID,
-#         end_time=end,
-#         duration=(end - start).total_seconds()
-#     )
-#     db.add(db_match)
-#     db.commit()
-#     db.refresh(db_match)
-#     return db_match
 
-# Testing end_match CRUD
 # UPDATE - End match
 def end_match(db: Session, matchID: str, match_data: MatchEnd):
     db_match = db.query(Match).filter(Match.matchID == matchID).first()
     if not db_match:
         raise HTTPException(status_code=404, detail="Match not found")
+
+    if db_match.startTime is None: 
+        raise HTTPException(status_code=400, detail="Match not found")
+    
+    if db_match.startTime.tzinfo is None:
+        db_match.startTime = db_match.startTime.replace(tzinfo=timezone.utc)
 
     db_match.endTime = datetime.now(timezone.utc)
     db_match.status = match_data.status

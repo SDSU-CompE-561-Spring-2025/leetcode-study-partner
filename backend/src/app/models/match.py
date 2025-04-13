@@ -11,8 +11,11 @@ class Match(Base):
     hostID= Column(String, ForeignKey("users.id"), index=True)
     guestID= Column(String, ForeignKey("users.id"), index=True)
     
-    startTime: DateTime = Column(DateTime, default=lambda:datetime.now(UTC))
-    endTime: DateTime = Column(DateTime, default=lambda:datetime.now(UTC))
+    # startTime: DateTime = Column(DateTime, default=lambda:datetime.now(UTC))
+    # endTime: DateTime = Column(DateTime, default=lambda:datetime.now(UTC))
+    startTime: DateTime = Column(DateTime(timezone=True), nullable=True)
+    endTime: DateTime = Column(DateTime(timezone=True), nullable=True)
+
     status: Boolean = Column(Boolean, default=False)
     duration: Integer = Column(Integer, default=0)
     
