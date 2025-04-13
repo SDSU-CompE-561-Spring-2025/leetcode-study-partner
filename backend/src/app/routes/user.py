@@ -1,9 +1,9 @@
 from datetime import timedelta
-from app.core.auth import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS, create_access_token, create_refresh_token, decode_refresh_token
+from app.core.auth import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS, oauth2_scheme, create_access_token, create_refresh_token, decode_refresh_token
 from app.models.token import RefreshToken
 from app.schemas.token import Token
 from app.schemas.user import UserResponse, UserCreate
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Security
 
 import app.services.user as user_service
 import app.services.token as token_service
@@ -70,9 +70,12 @@ def logout(refresh_token: str, db: Session = Depends(get_db)):
     return {"message": "Logged out successfully"}
 
 
-@router.get("/users/me")
-def read_users_me():
-    return {"message": "User details returned successfully"}
+@router.get("/users/me", response_model=UserResponse)
+def get_current_user(
+    db: Session = Depends(get_db),
+    token: str = Security(oauth2_scheme)
+):
+    return user_service.get_user_by_token(db=db, token=token)
 
 #TODO if we make this app real, we will need this
 # @router.post("/users/verify-email/{verification_code}")
