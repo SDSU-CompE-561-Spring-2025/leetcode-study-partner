@@ -6,6 +6,7 @@ from app.schemas.user import UserResponse, UserCreate
 from fastapi import APIRouter, Depends, Security
 
 import app.services.user as user_service
+import app.services.user_data as user_data_service
 import app.services.token as token_service
 from app.dependencies import get_db
 from fastapi.security import OAuth2PasswordRequestForm
@@ -18,6 +19,7 @@ router = APIRouter()
 @router.post("/register", response_model=UserResponse)
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
     new_user = user_service.create_user(db=db, user=user)
+    user_data_service.create_user_data(db=db, user_id=new_user.id)
     return new_user
 
 
