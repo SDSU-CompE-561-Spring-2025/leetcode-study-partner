@@ -1,8 +1,7 @@
 import uuid
-from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, String
 from datetime import UTC, datetime
 from app.core.database import Base
-from .problem import Problem
 
 class User(Base):
     __tablename__ = "users"
@@ -15,5 +14,3 @@ class User(Base):
     is_verfied = Column(Boolean, default=True)
     verification_code = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now(UTC))
-
-    #todo add relations to transactions and categories
