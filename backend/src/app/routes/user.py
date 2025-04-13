@@ -79,6 +79,22 @@ def get_current_user(
 ):
     return user_service.get_user_by_token(db=db, token=token)
 
+@router.put("/users/{user_id}", response_model=UserResponse)
+def update_user(
+    user_id: str,
+    user_update: UserCreate,
+    db: Session = Depends(get_db)
+):
+    updated_user = user_service.update_user(db=db, user_id=user_id, user_update=user_update)
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return updated_user
+
+@router.delete("/users/{user_id}")
+def delete_user(user_id: str, db: Session = Depends(get_db)):
+    result = user_service.delete_user(db=db, user_id=user_id)
+    return result
+
 #TODO if we make this app real, we will need this
 # @router.post("/users/verify-email/{verification_code}")
 # def verify_email(verification_code: str):
