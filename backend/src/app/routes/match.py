@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 router = APIRouter()
 
+############################################################
 # Will be removed, only for testing
 @router.delete("/match/{matchID}")
 def delete_match(reqBody: str, db: Session = Depends(get_db)):
@@ -20,7 +21,7 @@ def delete_match(reqBody: str, db: Session = Depends(get_db)):
     db.delete(match)
     db.commit()
     return {"message": "Match deleted successfully"}
-
+############################################################
 
 @router.post("/match/create", response_model=MatchResponse, tags=["Match"])
 def create_match(reqBody: MatchCreate, db: Session = Depends(get_db)):
@@ -36,19 +37,18 @@ def start_match(reqBody: str, db: Session = Depends(get_db)):
     start = match_service.start_match(db=db, matchID=reqBody)
     return start
 
-# TODO: Fix the other endpoints: match end
-
 @router.put("/match/end/{matchID}", response_model=MatchEndResponse, tags=["Match"])
 def end_match(matchID:str, match: MatchEnd, db: Session = Depends(get_db)):
     match_over = match_service.end_match(db=db, matchID=matchID, match_data=match)
     return match_over
 
 @router.get("/match/{matchID}", response_model=MatchDetails, tags=["Match"])
-def get_match_details(reqBody: str, db: Session = Depends(get_db)):
-    details = match_service.get_match_details(db=db, match_id=reqBody)
+def get_match_details(matchID: str, db: Session = Depends(get_db)):
+    details = match_service.get_match_details(db=db, match_id=matchID)
     if not details:
         raise HTTPException(status_code=404, detail="Match not found")
     return details
+
 
 @router.get("/match/history/{userID}", response_model=list[MatchHistory], tags=["Match"])
 def get_match_history(reqBody: str, db: Session = Depends(get_db)):
