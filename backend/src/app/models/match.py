@@ -25,5 +25,4 @@ class Match(Base):
 
     __table_args__ = (
         Index('ix_matches_host_guest', 'hostID', 'guestID'),
-        Index('ix_matches_guest_host', 'guestID', 'hostID'),
     )

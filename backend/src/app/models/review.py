@@ -30,5 +30,4 @@ class Rating(Base):
 
     __table_args__ = (
         Index('ix_matches_host_guest', 'host_id', 'guest_id'),
-        Index('ix_matches_guest_host', 'guest_id', 'host_id'),
     )
