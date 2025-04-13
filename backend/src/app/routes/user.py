@@ -1,5 +1,5 @@
 from datetime import timedelta
-from app.core.auth import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
+from app.core.auth import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS, create_access_token, create_refresh_token, decode_refresh_token
 from app.schemas.token import Token
 from app.schemas.user import UserResponse, UserCreate
 from fastapi import APIRouter, Depends
@@ -19,7 +19,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-@router.post("/token", response_model=Token)
+@router.post("/login", response_model=Token)
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
@@ -38,13 +38,34 @@ async def login_for_access_token(
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+
+    refresh_token_expires = timedelta(days = REFRESH_TOKEN_EXPIRE_DAYS)
+    refresh_token = create_refresh_token(
+        data={"sub": user.username}, expires_delta=refresh_token_expires
+    )
+    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+
+
+@router.post("/refresh")
+def refresh_token(refresh_token: str):
+    username = decode_refresh_token(refresh_token)
+    access_token_expires = timedelta(days = REFRESH_TOKEN_EXPIRE_DAYS)
+    new_access_token = create_access_token(
+        data={"sub": username}, expires_delta=access_token_expires
+    )
+    return {"access_token": new_access_token, "token_type": "bearer"}
+
+@router.post("/logout")
+def logout(refresh_token: str):
+
+    return {"message": "Logged out successfully"}
 
 
 @router.get("/users/me")
 def read_users_me():
     return {"message": "User details returned successfully"}
 
-@router.post("/users/verify-email/{verification_code}")
-def verify_email(verification_code: str):
-    return {"message": "Email verified successfully"}
+#TODO if we make this app real, we will need this
+# @router.post("/users/verify-email/{verification_code}")
+# def verify_email(verification_code: str):
+#     return {"message": "Email verified successfully"}
