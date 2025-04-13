@@ -6,6 +6,7 @@ from app.schemas.user import UserResponse, UserCreate
 from fastapi import APIRouter, Depends
 
 import app.services.user as user_service
+import app.services.token as token_service
 from app.dependencies import get_db
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -45,10 +46,9 @@ async def login_for_access_token(
         data={"sub": user.username}, expires_delta=refresh_token_expires
     )
 
-    user_service.store_refresh_token(db=db, user_id=user.id, refresh_token=refresh_token)
+    token_service.store_refresh_token(db=db, user_id=user.id, refresh_token=refresh_token)
 
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
-
 
 @router.post("/refresh")
 def refresh_token(refresh_token: str, db: Session = Depends(get_db)):
@@ -64,7 +64,7 @@ def refresh_token(refresh_token: str, db: Session = Depends(get_db)):
 
 @router.post("/logout")
 def logout(refresh_token: str, db: Session = Depends(get_db)):
-    success = user_service.delete_refresh_token(db=db, refresh_token=refresh_token)
+    success = token_service.delete_token(db=db, refresh_token=refresh_token)
     if not success:
         raise HTTPException(status_code=401, detail="Invalid refresh token")
     return {"message": "Logged out successfully"}
