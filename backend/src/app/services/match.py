@@ -68,6 +68,9 @@ def end_match(db: Session, matchID: str, match_data: MatchEnd):
     if not db_match:
         raise HTTPException(status_code=404, detail="Match not found")
 
+    if db_match.startTime.tzinfo is None:
+        db_match.startTime = db_match.startTime.replace(tzinfo=timezone.utc)
+
     db_match.endTime = datetime.now(timezone.utc)
     db_match.status = match_data.status
     db_match.duration = int((db_match.endTime - db_match.startTime).total_seconds())
