@@ -5,12 +5,12 @@ from sqlalchemy.orm import relationship
 from uuid import UUID
 from app.core.database import Base
 
-class Rating(Base):
+class Review(Base):
     __tablename__ = 'reviews'
 
     id = Column(Integer, primary_key = True, index = True)
 
-    match_id = Column(String, primary_key=True, autoincrement=True, unique=True, nullable=False)
+    match_id = Column(String, primary_key=True, unique=True, nullable=False)
 
     to_host_rating = Column(Integer, nullable=False)
     to_guest_rating = Column(Integer, nullable=False)
