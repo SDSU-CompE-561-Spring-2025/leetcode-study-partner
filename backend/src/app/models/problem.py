@@ -1,15 +1,14 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from datetime import UTC, datetime
 from app.core.database import Base
-from uuid import UUID
-from sqlalchemy.orm import relationship
-from .match import Match
 
 class Problem(Base):
     __tablename__ = "problems"
 
+    ## ATTRIBUTES ## 
     id = Column(Integer, primary_key=True, index=True)
-    problem_link = Column(String, index=True)
-    method_link = Column(String, index=True)
-    category = Column(String, index=True)
-
-    matches = relationship("Match", back_populates="problem")
+    problem_link = Column(String)
+    methods_video_link = Column(String)
+    category = Column(String)
+    
+    ## RELATIONSHIPS ##
