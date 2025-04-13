@@ -3,6 +3,7 @@ from app.schemas.queue import QueueTicket, QueueTicketCreate
 from fastapi.responses import HTMLResponse
 from app.schemas.user import UserResponse, UserCreate
 from fastapi import APIRouter, Depends, WebSocket
+from app.services.matchmaking import queue, queue_lock
 
 import app.services.user as user_service
 from app.dependencies import get_db
@@ -86,3 +87,10 @@ async def websocket_connect(websocket: WebSocket, db: Session = Depends(dependen
             categories=ticketRequest.categories,
         )
         print(ticket)
+        async with queue_lock:
+            #if ticket.user_id in queue:
+            #    await websocket.send_json({"warning": "Already in queue, old ticket will be overwritten"})
+            #    print("Overwriting ticket")
+            queue[ticket.user_id] = ticket
+            #print(f"Added {ticket.user_id} to queue")
+            
