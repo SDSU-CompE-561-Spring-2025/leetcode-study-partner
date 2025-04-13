@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 
 from app.core.config import get_settings
 from app.models.match import Match
-from app.schemas.match import MatchCreate, MatchHistory, MatchStart
+from app.schemas.match import MatchCreate, MatchDetails, MatchHistory, MatchStart
 
 settings = get_settings()
 
@@ -42,7 +42,7 @@ def start_match(db: Session, match: MatchStart):
     db.refresh(match) 
     return match
 
-# TODO: Fix CRUD for endmatch, match history, and match details 
+# TODO: Fix CRUD for endmatch, match history
 def end_match(db: Session, match: MatchHistory):
     end = datetime.now(timezone.utc)
     start = match.startTime
@@ -59,8 +59,8 @@ def end_match(db: Session, match: MatchHistory):
     db.refresh(db_match)
     return db_match
 
-def get_match(db: Session, matchID: str):
-    return db.query(Match).filter(Match.match_id == matchID).first()
+def get_match_details(db: Session, reqBody: str):
+    return db.query(Match).filter(Match.matchID == reqBody).first()
 
-def get_all_matches(db: Session):
-    return db.query(Match).all()
+def get_all_matches(db: Session, reqBody: str):
+    return db.query(Match).filter(Match.hostID == reqBody | Match.guestID == reqBody).all()

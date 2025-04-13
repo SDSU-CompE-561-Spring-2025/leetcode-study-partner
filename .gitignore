@@ -72,7 +72,7 @@ CACHEDIR.TAG
 # Environment files
 #.env TODO, uncomment once people understand, jsut gonna make this dev easier
 #.env.*
-
+env/
 
 # Miscellaneous
 instance/
