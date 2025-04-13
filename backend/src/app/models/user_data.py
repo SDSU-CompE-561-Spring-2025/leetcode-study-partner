@@ -10,11 +10,12 @@ from sqlalchemy.orm import relationship
 class UserData(Base):
     __tablename__ = "user_data"
 
-    id = Column(Integer, primary_key = True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     user_id = Column(String, ForeignKey("users.id"), unique=True, nullable=False)
 
-    profile_picutre = Column(String, nullable=True)
+    profile_picture = Column(String, nullable=True)
     last_login = Column(DateTime, default=datetime.now(UTC))
+    updated_at = Column(DateTime, default=datetime.now(UTC), onupdate=datetime.now(UTC))
 
     user = relationship("User", back_populates="user_data")
 

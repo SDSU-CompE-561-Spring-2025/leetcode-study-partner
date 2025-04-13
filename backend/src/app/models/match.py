@@ -17,8 +17,10 @@ class Match(Base):
 
     problemID = Column(Integer, ForeignKey("problems.id"), index=True)
 
-    host = relationship("User", foreign_keys=[hostID], backref="matches_as_host")
-    guest = relationship("User", foreign_keys=[guestID], backref="matches_as_guest")
+    host = relationship("User", foreign_keys=[hostID], back_populates="matches_as_host")
+    guest = relationship("User", foreign_keys=[guestID], back_populates="matches_as_guest")
+
+    problemID = Column(Integer, ForeignKey("problems.id"), index=True)
     problem = relationship("Problem", backref=backref("matches"))
 
     __table_args__ = (
