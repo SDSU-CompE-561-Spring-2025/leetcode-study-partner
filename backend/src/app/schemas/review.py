@@ -14,16 +14,16 @@ class UserReviewBase(BaseModel):
     elapsed_time: timedelta
 
 class UserReviewCreate(UserReviewBase):
-    match_id: int
-    host_id: int
-    guest_id: int
+    match_id: str
+    host_id: str
+    guest_id: str
 
 class UserReviewRead(UserReviewBase):
     id: int
-    match_id: int
-    host_id: int
-    guest_id: int
+    match_id: str
+    host_id: str
+    guest_id: str
     review_updated_at: datetime
 
-class Config:
-    orm_mode = True
+    class Config:
+        orm_mode = True
