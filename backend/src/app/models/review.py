@@ -1,5 +1,5 @@
 from datetime import UTC, datetime
-from sqlalchemy import Column, Index, Integer, String, Boolean, DateTime, Interval, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Interval, ForeignKey
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -27,7 +27,3 @@ class Rating(Base):
 
     host = relationship("User", foreign_keys=[host_id], back_populates="reviews_as_host")
     guest = relationship("User", foreign_keys=[guest_id], back_populates="reviews_as_guest")
-
-    __table_args__ = (
-        Index('ix_matches_host_guest', 'host_id', 'guest_id'),
-    )

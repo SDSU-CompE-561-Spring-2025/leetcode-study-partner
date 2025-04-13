@@ -12,15 +12,17 @@ def create_user_data(db: Session, user_id: str):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    user_data = UserDataCreate(
+    user_data = UserData(
         user_id=user.id,
         profile_picture=None,
         last_login=datetime.now(),
         updated_at=datetime.now(),
     )
+
     db.add(user_data)
     db.commit()
     db.refresh(user_data)
+
     return user_data
 
 def update_user_data(db: Session, user_id: str, user_data_update: UserDataCreate):
