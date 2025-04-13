@@ -55,9 +55,6 @@ def end_match(db: Session, matchID: str, match_data: MatchEnd):
     if not db_match:
         raise HTTPException(status_code=404, detail="Match not found")
 
-    if db_match.startTime is None: 
-        raise HTTPException(status_code=400, detail="Match not found")
-    
     if db_match.startTime.tzinfo is None:
         db_match.startTime = db_match.startTime.replace(tzinfo=timezone.utc)
 
