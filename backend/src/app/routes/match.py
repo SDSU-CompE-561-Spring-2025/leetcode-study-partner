@@ -17,7 +17,7 @@ def create_match(reqBody: MatchCreate, db: Session = Depends(get_db)):
     return new_match
 
 @router.delete("/delete{match_id}")
-def delete_match(reqBody: str, db: Session = Depends(get_db)):
+def delete_match(reqBody: UUID, db: Session = Depends(get_db)):
     match = db.query(Match).filter(Match.matchID == reqBody).first()
     if not match:
         raise HTTPException(status_code=404, detail="Match not found")
@@ -26,7 +26,7 @@ def delete_match(reqBody: str, db: Session = Depends(get_db)):
     return {"message": "Match deleted successfully"}
 
 @router.put("/start/{match_id}", response_model=MatchStart, tags=["Match"])
-def start_match(reqBody: str, db: Session = Depends(get_db)):
+def start_match(reqBody: UUID, db: Session = Depends(get_db)):
     existing = db.query(Match).filter(Match.matchID == reqBody).first()
     if not existing:
         raise HTTPException(status_code=404, detail="Match not found")
@@ -35,12 +35,12 @@ def start_match(reqBody: str, db: Session = Depends(get_db)):
     return start
 
 @router.put("/end/{match_id}", response_model=MatchEndResponse, tags=["Match"])
-def end_match(matchID:str, match: MatchEnd, db: Session = Depends(get_db)):
+def end_match(matchID:UUID, match: MatchEnd, db: Session = Depends(get_db)):
     match_over = match_service.end_match(db=db, matchID=matchID, match_data=match)
     return match_over
 
 @router.get("/details/{match_id}", response_model=MatchDetails, tags=["Match"])
-def get_match_details(matchID: str, db: Session = Depends(get_db)):
+def get_match_details(matchID: UUID, db: Session = Depends(get_db)):
     details = match_service.get_match_details(db=db, match_id=matchID)
     if not details:
         raise HTTPException(status_code=404, detail="Match not found")
@@ -48,7 +48,7 @@ def get_match_details(matchID: str, db: Session = Depends(get_db)):
 
 
 @router.get("/history/{user_id}", response_model=list[MatchHistory], tags=["Match"])
-def get_match_history(reqBody: str, db: Session = Depends(get_db)):
+def get_match_history(reqBody: UUID, db: Session = Depends(get_db)):
     matches = match_service.get_all_matches(db=db, reqBody=reqBody)
     if not matches:
         raise HTTPException(status_code=404, detail="No match history found")

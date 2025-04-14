@@ -24,7 +24,8 @@ class UserReviewRead(UserReviewBase):
     match_id: UUID
     host_id: UUID
     guest_id: UUID
-    review_updated_at: datetime
+    review_updated_at: Optional[datetime] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
