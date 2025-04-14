@@ -28,3 +28,5 @@ class User(Base):
 
     matches_as_host = relationship("Match", foreign_keys="Match.hostID", back_populates="host")
     matches_as_guest = relationship("Match", foreign_keys="Match.guestID", back_populates="guest")
+
+    refresh_tokens = relationship("RefreshToken", back_populates="user")

@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
+from uuid import UUID
+
 
 class UserDataBase(BaseModel):
     profile_picture: Optional[str] = None
@@ -11,8 +13,8 @@ class UserDataBase(BaseModel):
         orm_mode = True
 
 class UserDataCreate(UserDataBase):
-    user_id: str
+    user_id: UUID
 
 class UserDataResponse(UserDataBase):
     id: int
-    user_id: str
+    user_id: UUID

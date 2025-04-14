@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from pydantic import BaseModel
 from typing import Optional
+from uuid import UUID
 
 class UserReviewBase(BaseModel):
     to_host_rating: int
@@ -15,14 +16,14 @@ class UserReviewBase(BaseModel):
 
 class UserReviewCreate(UserReviewBase):
     match_id: str
-    host_id: str
-    guest_id: str
+    host_id: UUID
+    guest_id: UUID
 
 class UserReviewRead(UserReviewBase):
     id: int
-    match_id: str
-    host_id: str
-    guest_id: str
+    match_id: UUID
+    host_id: UUID
+    guest_id: UUID
     review_updated_at: datetime
 
     class Config:

@@ -1,5 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, constr, EmailStr, Field
+from uuid import UUID
+
 class UserBase(BaseModel):
     username: constr(min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9 ]+$")
     email: EmailStr
@@ -9,7 +11,7 @@ class UserCreate(UserBase):
     password: constr(min_length=8, max_length=64)
 
 class User(UserBase):
-    id: str = Field(...)
+    id: UUID = Field(...)
     username: constr(min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_]+$")
     email: EmailStr
     created_at: datetime
@@ -18,7 +20,7 @@ class User(UserBase):
         from_attributes = True
 
 class UserResponse(BaseModel):
-    id: str = Field(...)
+    id: UUID = Field(...)
     username: constr(min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_]+$")
     email: EmailStr
     created_at: datetime
