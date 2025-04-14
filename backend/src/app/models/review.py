@@ -7,7 +7,7 @@ from sqlalchemy.dialects.postgresql import UUID
 class Review(Base):
     __tablename__ = "reviews"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     match_id = Column(UUID(as_uuid=True), ForeignKey("match.matchID"), nullable=False)
     to_host_rating = Column(Integer, nullable=False)
     to_guest_rating = Column(Integer, nullable=False)
