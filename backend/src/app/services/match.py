@@ -18,14 +18,12 @@ settings = get_settings()
 def create_match(db: Session, match: MatchCreate):
     new_match_id: UUID = uuid.uuid4()
     
-    check_same_users(db, str(match.hostID), str(match.guestID))
-    
-    check_matchID(db, str(new_match_id))
+    check_same_users(db, match.hostID, match.guestID)
     
     new_match = Match(
-        matchID=str(new_match_id),
-        hostID=str(match.hostID),
-        guestID=str(match.guestID),
+        matchID=new_match_id,
+        hostID=match.hostID,
+        guestID=match.guestID,
         problemID=match.problemID
     )
     
@@ -39,7 +37,7 @@ def create_match(db: Session, match: MatchCreate):
     return new_match
 
 # UPDATE - Start match
-def start_match(db: Session, matchID: str):
+def start_match(db: Session, matchID: UUID):
     check_matchID(db, matchID)
     
     db_match = db.query(Match).filter(Match.matchID == matchID).first()
@@ -50,7 +48,7 @@ def start_match(db: Session, matchID: str):
     return db_match
 
 # UPDATE - End match
-def end_match(db: Session, matchID: str, match_data: MatchEnd):
+def end_match(db: Session, matchID: UUID, match_data: MatchEnd):
     check_matchID(db, matchID)
 
     db_match = db.query(Match).filter(Match.matchID == matchID).first()
@@ -67,11 +65,11 @@ def end_match(db: Session, matchID: str, match_data: MatchEnd):
     return db_match
 
 # READ - Get match details
-def get_match_details(db: Session, match_id: str):
+def get_match_details(db: Session, match_id: UUID):
     return db.query(Match).filter(Match.matchID == match_id).first()
 
 # READ - Get all matches for a user
-def get_all_matches(db: Session, reqBody: str):
+def get_all_matches(db: Session, reqBody: UUID):
     
     check_user(db, reqBody)
     
@@ -86,17 +84,17 @@ def get_all_matches(db: Session, reqBody: str):
 ####### Helper Function #######
 
 # Check if host and guest are the same
-def check_same_users(db: Session, hostID: str, guestID: str):
+def check_same_users(db: Session, hostID: UUID, guestID: UUID):
     if hostID == guestID:
         raise HTTPException(status_code=400, detail="Host and guest cannot be the same")
     return
 
-def check_matchID(db: Session, matchID: str):
+def check_matchID(db: Session, matchID: UUID):
     if not db.query(Match).filter(Match.matchID == matchID).first():
         raise HTTPException(status_code=404, detail="Match not found")
     return
 
-def check_user(db: Session, userID: str):
+def check_user(db: Session, userID: UUID):
     if not db.query(User).filter(User.id == userID).first():
         raise HTTPException(status_code=404, detail="User not found")
     return
