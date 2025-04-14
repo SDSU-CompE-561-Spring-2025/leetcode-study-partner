@@ -44,9 +44,6 @@ def update_problem(db: Session, lc_id: int, problem_update: ProblemCreate):
     return existing_problem
 
 
-def get_all_problems(db: Session):
-    return db.query(Problem).all()
-
 def get_problem(db: Session, lc_id: int):
     return db.query(Problem).filter(Problem.id == lc_id).first()
 

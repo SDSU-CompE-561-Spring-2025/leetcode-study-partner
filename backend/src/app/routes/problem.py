@@ -22,37 +22,33 @@ from app.schemas.user_match_history import UserMatchHistory
 
 router = APIRouter()
 
-@router.post("api/problems/create", response_model=Problem)
+@router.post("/create", response_model=Problem)
 def create_problem(problem: ProblemCreate, db: Session = Depends(get_db)):
     new_problem = problem_service.create_problem(db=db, problem=problem)
     return new_problem
 
-@router.get("/api/problems/{lc_id}")
+@router.get("/{lc_id}")
 def get_single_problem(lc_id: int, db: Session = Depends(get_db)):
     problem = problem_service.get_problem(db=db, lc_id=lc_id)
     if not problem:
         raise HTTPException(status_code=404, detail="Problem not found")
     return problem
 
-@router.put("/api/problems/update/{lc_id}", response_model=Problem)
+@router.put("/update/{lc_id}", response_model=Problem)
 def update_problem(lc_id: int, problem: ProblemCreate, db: Session = Depends(get_db)):
-    result = problem_service.update_problem(db=db, lc_id=lc_id, problem=problem)
+    result = problem_service.update_problem(db=db, lc_id=lc_id, problem_update=problem)
     return result
 
-@router.delete("/api/problems/delete/{lc_id}")
+@router.delete("/delete/{lc_id}")
 def delete_problem(lc_id: int, db: Session = Depends(get_db)):
     result = problem_service.delete_problem(db=db, lc_id=lc_id)
     return result
 
-@router.get("/api/problems")
-def get_all_problems(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    problems = db.query(Problem).offset(skip).limit(limit).all()
-    return problems
-
 
 # TODO: Figure out how to integrate with user match history (too difficult while they're separated)
-@router.get("/api/problems/solved/{user_id}")
-def get_solved_problems(user_id: int, db: Session = Depends(get_db)):
-    given_user = db.query(User).filter(User.id == user_id)
-    solved_problems = db.query(Problem)
-    return given_user
+# we dont know if we're gonna do this
+#@router.get("/solved/{user_id}")
+#def get_solved_problems(user_id: int, db: Session = Depends(get_db)):
+#    given_user = db.query(User).filter(User.id == user_id)
+#    solved_problems = db.query(Problem)
+#    return given_user
