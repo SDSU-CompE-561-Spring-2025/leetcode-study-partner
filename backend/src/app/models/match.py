@@ -12,6 +12,7 @@ class Match(Base):
 
     startTime: DateTime = Column(DateTime, default=lambda:datetime.now(UTC))
     endTime: DateTime = Column(DateTime, default=lambda:datetime.now(UTC))
+
     status: Boolean = Column(Boolean, default=False)
     duration: Integer = Column(Integer, default=0)
 
