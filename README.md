@@ -1,28 +1,66 @@
 
-# Project
+# 📚 Meetcode
 
-Hello! This app is made to create a omegle like expereince, where users can study leetcode problems together!
+This app creates an Omegle-like experience where users can study LeetCode problems together! 👯‍♂️💻
 
-# Running Front End
+---
 
-## Navigate to the frontend directory
+## 📑 Table of Contents
+- [Dependencies](#-dependencies)
+- [Running Back End](#-running-back-end)
+- [Running Front End](#-running-front-end)
 
+---
+
+## 🔧 Dependencies
+
+- 🐳 [Docker](https://www.docker.com/products/docker-desktop/)
+- 📦 [Node.js & NPM](https://nodejs.org/)
+- 🐍 [Python 3.13](https://www.python.org/downloads/)
+
+---
+
+## 🖥️ Running Back End
+
+### 📁 Navigate to the backend directory
+
+```bash
+cd backend
 ```
-npm install
 
+### 🐘 Start Postgres
+
+```bash
+docker-compose up -d
+```
+
+### 🚀 Start FastAPI
+
+```bash
+hatch shell
+hatch run dev
+```
+
+---
+
+## 🎨 Running Front End
+
+### 📁 Navigate to the frontend directory
+
+```bash
+cd frontend
+```
+
+### 📦 Install dependencies
+
+```bash
+npm install
+```
+
+### 🧪 Start development server
+
+```bash
 npm run dev
 ```
 
-# Running Back End
-
-
-## Navigate to the backend directory
-```
-hatch shell
-
-hatch run dev
-
-#or
-
-fastapi dev src/app/main.py
-```
+---
