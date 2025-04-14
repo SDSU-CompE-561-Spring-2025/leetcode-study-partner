@@ -25,5 +25,5 @@ class UserReviewRead(UserReviewBase):
     guest_id: str
     review_updated_at: datetime
 
-class Config:
-    orm_mode = True
+    class Config:
+        orm_mode = True

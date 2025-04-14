@@ -9,6 +9,8 @@ load_dotenv()
 class Settings(BaseSettings):
     DATABASE_URL: str
     SECRET_KEY: str
+    SECRET_KEY_ACCESS: str
+    SECRET_KEY_REFRESH: str
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

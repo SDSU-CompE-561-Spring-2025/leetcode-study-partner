@@ -1,16 +1,14 @@
 from datetime import UTC, datetime
-from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Interval, ForeignKey
 from sqlalchemy.orm import relationship
-from uuid import UUID
 from app.core.database import Base
 
-class Rating(Base):
+class Review(Base):
     __tablename__ = 'reviews'
 
     id = Column(Integer, primary_key = True, index = True)
 
-    match_id = Column(String, primary_key=True, autoincrement=True, unique=True, nullable=False)
+    match_id = Column(String, primary_key=True, unique=True, nullable=False)
 
     to_host_rating = Column(Integer, nullable=False)
     to_guest_rating = Column(Integer, nullable=False)
@@ -27,5 +25,5 @@ class Rating(Base):
     host_id = Column(String, ForeignKey("users.id"), nullable=False)
     guest_id = Column(String, ForeignKey("users.id"), nullable=False)
 
-    host = relationship("User", foreign_keys=[host_id])
-    guest = relationship("User", foreign_keys=[guest_id])
+    host = relationship("User", foreign_keys=[host_id], back_populates="reviews_as_host")
+    guest = relationship("User", foreign_keys=[guest_id], back_populates="reviews_as_guest")
