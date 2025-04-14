@@ -8,8 +8,6 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: constr(min_length=8, max_length=64)
 
-#TODO add custom validator
-
 class User(UserBase):
     id: str = Field(...)
     username: constr(min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_]+$")
