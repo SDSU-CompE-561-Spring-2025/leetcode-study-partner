@@ -20,8 +20,6 @@ def create_match(db: Session, match: MatchCreate):
     
     check_same_users(db, str(match.hostID), str(match.guestID))
     
-    check_matchID(db, str(new_match_id))
-    
     new_match = Match(
         matchID=str(new_match_id),
         hostID=str(match.hostID),
