@@ -19,8 +19,8 @@ class User(Base):
 
     user_data = relationship("UserData", back_populates="user")
 
-    reviews_as_host = relationship("Rating", foreign_keys="Rating.host_id", back_populates="host")
-    reviews_as_guest = relationship("Rating", foreign_keys="Rating.guest_id", back_populates="guest")
+    reviews_as_host = relationship("Review", foreign_keys="Review.host_id", back_populates="host")
+    reviews_as_guest = relationship("Review", foreign_keys="Review.guest_id", back_populates="guest")
 
     matches_as_host = relationship("Match", foreign_keys="Match.hostID", back_populates="host")
     matches_as_guest = relationship("Match", foreign_keys="Match.guestID", back_populates="guest")
