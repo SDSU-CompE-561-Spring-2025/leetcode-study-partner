@@ -34,6 +34,12 @@ cd backend
 docker-compose up -d
 ```
 
+### Shutdown docker image
+
+```bash
+docker-compose down -v
+```
+
 ### 🚀 Start FastAPI
 
 ```bash
