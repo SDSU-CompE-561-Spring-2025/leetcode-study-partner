@@ -9,14 +9,6 @@ router = APIRouter()
 
 #Creation of user_data is only at user to keep cohesiveness
 
-@router.post("/users/{user_id}/create", response_model=UserDataResponse)
-def create_user_data_endpoint(
-    user_data_create: UserDataCreate,
-    db: Session = Depends(get_db)
-):
-    user_data = user_data_service.create_user_data(db=db, user_data_create=user_data_create)
-    return user_data
-
 @router.put("/users/{user_id}/update", response_model=UserDataResponse)
 def update_user_data_endpoint(
     user_id: str, user_data: UserDataCreate, db: Session = Depends(get_db)
@@ -28,8 +20,3 @@ def update_user_data_endpoint(
 def get_user_data_endpoint(user_id: str, db: Session = Depends(get_db)):
     user_data = user_data_service.get_user_data(db=db, user_id=user_id)
     return user_data
-
-@router.delete("/users/{user_id}/delete", response_model=dict)
-def delete_user_data_endpoint(user_id: str, db: Session = Depends(get_db)):
-    result = user_data_service.delete_user_data(db=db, user_id=user_id)
-    return result
