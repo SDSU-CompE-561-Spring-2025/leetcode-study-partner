@@ -76,3 +76,5 @@ env/
 
 # Miscellaneous
 instance/
+
+*.session.sql
