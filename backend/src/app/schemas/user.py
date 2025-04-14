@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel, constr, EmailStr, Field
 from uuid import UUID
 
@@ -27,3 +28,12 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class UserUpdateRequest(BaseModel):
+    current_password: str
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+    new_password: Optional[constr(min_length=8, max_length=64)] = None
+
+class DeleteUserRequest(BaseModel):
+    password: str

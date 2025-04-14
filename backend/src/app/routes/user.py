@@ -2,7 +2,7 @@ from datetime import timedelta
 from app.core.auth import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS, oauth2_scheme, create_access_token, create_refresh_token, decode_refresh_token
 from app.models.token import RefreshToken
 from app.schemas.token import Token
-from app.schemas.user import UserResponse, UserCreate
+from app.schemas.user import DeleteUserRequest, UserResponse, UserCreate, UserUpdateRequest
 from fastapi import APIRouter, Depends, Security
 
 import app.services.user as user_service
@@ -79,10 +79,11 @@ def get_current_user(
 ):
     return user_service.get_user_by_token(db=db, token=token)
 
-@router.put("/users/{user_id}", response_model=UserResponse)
-def update_user(
+
+@router.put("/update/{user_id}", response_model=UserResponse)
+def update_user_route(
     user_id: str,
-    user_update: UserCreate,
+    user_update: UserUpdateRequest,
     db: Session = Depends(get_db)
 ):
     updated_user = user_service.update_user(db=db, user_id=user_id, user_update=user_update)
@@ -90,10 +91,11 @@ def update_user(
         raise HTTPException(status_code=404, detail="User not found")
     return updated_user
 
-@router.delete("/users/{user_id}")
-def delete_user(user_id: str, db: Session = Depends(get_db)):
-    result = user_service.delete_user(db=db, user_id=user_id)
-    return result
+
+@router.delete("/users/{user_id}", response_model=dict)
+def delete_user_route(user_id: str, delete_request: DeleteUserRequest, db: Session = Depends(get_db)):
+    password = delete_request.password
+    return user_service.delete_user(db=db, user_id=user_id, password=password)
 
 #TODO if we make this app real, we will need this
 # @router.post("/users/verify-email/{verification_code}")
