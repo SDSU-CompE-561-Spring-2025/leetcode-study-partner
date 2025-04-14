@@ -1,4 +1,4 @@
-from app.schemas.user_data import UserDataCreate, UserDataResponse
+from app.schemas.user_data import PasswordUpdate, UserDataResponse, UserDataUpdate
 from fastapi import APIRouter
 from app.dependencies import get_db
 from fastapi import Depends
@@ -7,13 +7,19 @@ import app.services.user_data as user_data_service
 
 router = APIRouter()
 
-#Creation of user_data is only at user to keep cohesiveness
-
 @router.put("/users/{user_id}/update", response_model=UserDataResponse)
 def update_user_data_endpoint(
-    user_id: str, user_data: UserDataCreate, db: Session = Depends(get_db)
+    user_id: str,
+    user_data: UserDataUpdate,
+    password_data: PasswordUpdate,
+    db: Session = Depends(get_db)
 ):
-    updated_user_data = user_data_service.update_user_data(db=db, user_id=user_id, user_data_update=user_data)
+    updated_user_data = user_data_service.update_user_data(
+        db=db,
+        user_id=user_id,
+        user_data_update=user_data,
+        password_data=password_data
+    )
     return updated_user_data
 
 @router.get("/users/{user_id}/data", response_model=UserDataResponse)

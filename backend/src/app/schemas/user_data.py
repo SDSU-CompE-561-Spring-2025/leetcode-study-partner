@@ -18,3 +18,13 @@ class UserDataCreate(UserDataBase):
 class UserDataResponse(UserDataBase):
     id: int
     user_id: UUID
+
+class PasswordUpdate(BaseModel):
+    current_password: str
+    new_password: str
+
+class UserDataBase(BaseModel):
+    profile_picture: str | None = None
+
+class UserDataUpdate(UserDataBase):
+    pass
