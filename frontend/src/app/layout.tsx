@@ -15,8 +15,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: 'Budget Buddy',
-	description: 'A budgeting app to help you manage your finances',
+	title: 'MeetCode',
+	description: 'A matchmaking platform to solve programming problems together.',
+	icons: {
+		icon: '/meetcode.png',
+	  },
 };
 
 export default function RootLayout({

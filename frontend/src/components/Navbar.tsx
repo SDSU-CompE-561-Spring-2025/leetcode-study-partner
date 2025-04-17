@@ -6,52 +6,49 @@ import { buttonVariants } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
+const user = null; // Replace with actual user data
+const isLoggedIn = !!user;
+
 const navList = [
 	{
 		label: 'Dashboard',
-		link: '/',
+		link: '/dashboard',
 	},
 	{
-		label: 'Summary',
-		link: '/summary',
+		label: 'Match',
+		link: '/match',
 	},
 	{
 		label: 'About',
 		link: '/about',
 	},
-	{
-		label: 'Support',
-		link: '/support',
-	},
 ];
 
 function Navbar() {
 	const pathname = usePathname();
-	const isActive = pathname === '/';
+	// const isActive = pathname === '/';
 
 	return (
-		<div className={'hidden border-separate border-b bg-background md:block'}>
-			<nav className={'container flex items-center justify-between px-8'}>
-				<div className={'flex h-[80px] min-h-[60px] items-center gap-x-4'}>
-					<Logo />
-					<div className={'flex h-full'}>
-						{navList.map((item) => (
-							<NavbarItem
-								key={item.label}
-								link={item.link}
-								label={item.label}
-							/>
-						))}
-					</div>
-				</div>
-			</nav>
-		</div>
+		<nav className='flex h-[80px] items-center justify-between border-b px-8' style={{ backgroundColor: 'oklch(70.5% 0.213 47.604)' }} >
+			<Logo />
+			<div className='flex gap-x-6 absolute left-1/2 -translate-x-1/2 text-white'>
+				{navList.map((item) => (
+					<NavbarItem 
+						key={item.label} 
+						link={item.link} 
+						label={item.label} 
+					/>
+				))}
+			</div>
+			<NavbarItem link='/sign-in' label='Sign In' withIcon />
+    	</nav>
 	);
 }
 
 interface NavbarItemProps {
 	link: string;
 	label: string;
+	withIcon?: boolean;
 	clickCallBack?: () => void;
 }
 
@@ -65,8 +62,8 @@ function NavbarItem({ link, label, clickCallBack }: NavbarItemProps) {
 					href={link}
 					className={cn(
 						buttonVariants({ variant: 'ghost' }),
-						'w-full justify-start text-lg text-muted-foreground hover:text-foreground',
-						isActive && 'text-amber-500'
+						'w-full justify-start text-lg text-white hover:text-black',
+						isActive && 'text-white'
 					)}
 					onClick={() => {
 						if (clickCallBack) clickCallBack();
@@ -75,7 +72,7 @@ function NavbarItem({ link, label, clickCallBack }: NavbarItemProps) {
 					{label}
 				</Link>
 				{isActive && (
-					<div className="absolute -bottom-[2px] left-1/2 hidden h-[5px] w-[80%] -translate-x-1/2 rounded-xl bg-amber-500 md:block" />
+					<div className="absolute -bottom-[2px] left-1/2 hidden h-[5px] w-[80%] -translate-x-1/2 rounded-xl bg-white md:block" />
 				)}
 			</div>
 		</>

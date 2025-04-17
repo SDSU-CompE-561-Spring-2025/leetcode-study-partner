@@ -1,5 +1,5 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { HandCoins } from 'lucide-react';
 
 function Logo() {
 	return (
@@ -7,13 +7,19 @@ function Logo() {
 			href={'/'}
 			className={'flex items-center gap-2'}
 		>
-			<HandCoins className={'stroke h-11 w-11 stroke-amber-500 stroke-[1.5]'} />
+			<Image
+				src="/meetcode.png"
+				alt="MeetCode Logo"
+				width={44}
+				height={44}
+				className="rounded-full"
+			/>
 			<p
 				className={
-					'bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-3xl leading-tight text-transparent'
+					'text-white text-3xl leading-tight'
 				}
 			>
-				Budget Buddy
+				MeetCode
 			</p>
 		</Link>
 	);
