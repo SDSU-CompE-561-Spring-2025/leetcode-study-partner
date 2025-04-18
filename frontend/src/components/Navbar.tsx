@@ -6,17 +6,14 @@ import { buttonVariants } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
-const user = null; // Replace with actual user data
-const isLoggedIn = !!user;
-
 const navList = [
 	{
 		label: 'Dashboard',
 		link: '/dashboard',
 	},
 	{
-		label: 'Match',
-		link: '/match',
+		label: 'Matchmaking',
+		link: '/matchmaking',
 	},
 	{
 		label: 'About',
@@ -26,7 +23,7 @@ const navList = [
 
 function Navbar() {
 	const pathname = usePathname();
-	// const isActive = pathname === '/';
+	const isActive = pathname === '/';
 
 	return (
 		<nav className='flex h-[80px] items-center justify-between border-b px-8' style={{ backgroundColor: 'oklch(70.5% 0.213 47.604)' }} >
