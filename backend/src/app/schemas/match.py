@@ -3,29 +3,29 @@ from pydantic import BaseModel
 from uuid import UUID
   
 class MatchCreate(BaseModel):
-    hostID: UUID
-    guestID: UUID
-    problemID: int
+    host_id: UUID
+    guest_id: UUID
+    problem_id: int
 
 class MatchResponse(BaseModel):
-    matchID: UUID
-    hostID: UUID
-    guestID: UUID
-    problemID: int
+    match_id: UUID
+    host_id: UUID
+    guest_id: UUID
+    problem_id: int
 
     class Config:
         from_attributes = True
 
 class MatchStart(BaseModel):
-    matchID: UUID
+    match_id: UUID
     startTime: datetime
 
 class MatchEnd(BaseModel):
-    matchID: UUID
+    match_id: UUID
     status: bool
     
 class MatchEndResponse(BaseModel):
-    matchID: UUID
+    match_id: UUID
     status: bool
     endTime: datetime
     duration: int
@@ -34,9 +34,9 @@ class MatchEndResponse(BaseModel):
         from_attributes = True
 
 class MatchHistory(BaseModel):
-    matchID: UUID
-    hostID: UUID
-    guestID: UUID
+    match_id: UUID
+    host_id: UUID
+    guest_id: UUID
     status: bool
     duration: int
     
@@ -44,12 +44,12 @@ class MatchHistory(BaseModel):
         from_attributes = True
 
 class MatchDetails(BaseModel):
-    matchID: UUID
-    hostID: UUID
-    guestID: UUID
+    match_id: UUID
+    host_id: UUID
+    guest_id: UUID
     status: bool
     duration: int
-    problemID: int
+    problem_id: int
     startTime: datetime
     endTime: datetime
     

@@ -1,4 +1,4 @@
-from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String
+from sqlalchemy import JSON, Boolean, CheckConstraint, Column, DateTime, Integer, String
 from datetime import UTC, datetime
 from app.core.database import Base
 
@@ -11,5 +11,13 @@ class Problem(Base):
     problem_link = Column(String(512))
     methods_video_link = Column(String(512))
     categories = Column(JSON)
+    difficulty = Column(String(16))
+    
+    __table_args__ = (
+        CheckConstraint(
+            "difficulty in ('Easy', 'Medium', 'Hard')",
+            name="check_difficulty",
+        ),
+     )
     
     
