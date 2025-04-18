@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 function AboutPage() {
 	return (
-		<div className="min-h-screen flex flex-col items-center justify-center p-8">
+		<div className="min-h-screen flex flex-col items-center p-13">
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-6xl w-full">
 				{/* Left: YouTube Embed */}
 				<div className="w-full aspect-video">
