@@ -15,8 +15,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: 'Budget Buddy',
-	description: 'A budgeting app to help you manage your finances',
+	title: 'Meet2Code',
+	description: 'A matchmaking platform to solve programming problems together.',
+	icons: {
+		icon: '/meetcode.png',
+	  },
 };
 
 export default function RootLayout({
@@ -34,7 +37,7 @@ export default function RootLayout({
 			>
 				<ThemeProvider
 					attribute="class"
-					defaultTheme="system"
+					defaultTheme="dark"
 					enableSystem
 					disableTransitionOnChange
 				>
