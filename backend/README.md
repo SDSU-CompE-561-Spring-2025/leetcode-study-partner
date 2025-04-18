@@ -1,21 +1,38 @@
-# app
+# Backend – LeetCode Study Partner
 
-[![PyPI - Version](https://img.shields.io/pypi/v/app.svg)](https://pypi.org/project/app)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/app.svg)](https://pypi.org/project/app)
+This is the FastAPI backend service for **MeetCode**. It provides authentication, user management, match coordination, and a review system for users.
 
 ---
 
-## Table of Contents
+## 🚀 Getting Started
 
--   [Installation](#installation)
--   [License](#license)
+### 1. Clone the Repository
+```bash
+git clone https://github.com/SDSU-CompE-561-Spring-2025/leetcode-study-partner.git
+cd leetcode-study-partner/backend
 
-## Installation
+### 2. Create a Virtual Environment
 
-```console
-pip install app
-```
+This project uses Hatch, which is used to manage virtual environments. If you don't have it installed yet, install it now using:
+pip install hatch
 
-## License
+### 3. Install dependencies
 
-`app` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
+Use the .venv defined in pyproject.toml to install all required packages using uv:
+hatch env create
+
+### 4. Set Up Environment Variables
+
+Create a .env file in the backend/ folder and include the following variables. These are required for database connection and token handling, and the values are temporary for now:
+DATABASE_URL="sqlite:///./sql_app.db"
+SECRET_KEY="secret"
+SECRET_KEY_ACCESS="access"
+SECRET_KEY_REFRESH="refresh"
+
+### 5. Run the application
+Start a local development server using fastapi dev src/app/main.py:
+hatch run dev
+
+### 6. Test the API
+Once the server is running, open your browser and visit to see the auto-generated Swagger UI with all available endpoints (auth, data, match, reviews, etc.):
+http://127.0.0.1:8000/docs
