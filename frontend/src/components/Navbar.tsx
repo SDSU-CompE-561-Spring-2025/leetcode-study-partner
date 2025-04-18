@@ -26,9 +26,9 @@ function Navbar() {
 	const isActive = pathname === '/';
 
 	return (
-		<nav className='flex h-[80px] items-center justify-between border-b px-8' style={{ backgroundColor: 'oklch(70.5% 0.213 47.604)' }} >
+		<nav className='flex h-[80px] items-center justify-between border-b px-8'>
 			<Logo />
-			<div className='flex gap-x-6 absolute left-1/2 -translate-x-1/2 text-white'>
+			<div className='flex gap-x-6 absolute left-1/2 -translate-x-1/2'>
 				{navList.map((item) => (
 					<NavbarItem 
 						key={item.label} 
@@ -59,8 +59,8 @@ function NavbarItem({ link, label, clickCallBack }: NavbarItemProps) {
 					href={link}
 					className={cn(
 						buttonVariants({ variant: 'ghost' }),
-						'w-full justify-start text-lg text-white hover:text-black',
-						isActive && 'text-white'
+						'w-full justify-start text-lg text-muted-foreground hover:text-foreground',
+						isActive && 'text-amber-500'
 					)}
 					onClick={() => {
 						if (clickCallBack) clickCallBack();
@@ -69,7 +69,7 @@ function NavbarItem({ link, label, clickCallBack }: NavbarItemProps) {
 					{label}
 				</Link>
 				{isActive && (
-					<div className="absolute -bottom-[2px] left-1/2 hidden h-[5px] w-[80%] -translate-x-1/2 rounded-xl bg-white md:block" />
+					<div className="absolute -bottom-[2px] left-1/2 hidden h-[5px] w-[80%] -translate-x-1/2 rounded-xl bg-amber-500 md:block" />
 				)}
 			</div>
 		</>

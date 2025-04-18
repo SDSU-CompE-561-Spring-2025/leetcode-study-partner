@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: 'MeetCode',
+	title: 'Meet2Code',
 	description: 'A matchmaking platform to solve programming problems together.',
 	icons: {
 		icon: '/meetcode.png',
@@ -37,7 +37,7 @@ export default function RootLayout({
 			>
 				<ThemeProvider
 					attribute="class"
-					defaultTheme="system"
+					defaultTheme="dark"
 					enableSystem
 					disableTransitionOnChange
 				>

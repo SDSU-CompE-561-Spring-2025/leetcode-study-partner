@@ -9,17 +9,17 @@ function Logo() {
 		>
 			<Image
 				src="/meetcode.png"
-				alt="MeetCode Logo"
+				alt="Meet2Code Logo"
 				width={44}
 				height={44}
 				className="rounded-full"
 			/>
 			<p
 				className={
-					'text-white text-3xl leading-tight'
+					'bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-3xl leading-tight text-transparent'
 				}
 			>
-				MeetCode
+				Meet2Code
 			</p>
 		</Link>
 	);
