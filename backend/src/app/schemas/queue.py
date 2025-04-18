@@ -31,7 +31,7 @@ class Status(str, Enum):
 
 
 class QueueTicket(BaseModel):
-    user_id: int = Field(...)
+    user_id: UUID = Field(...)
     programming_languages: List[ProgrammingLanguage]
     categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$", max_length=32)], min_length=1, max_length=5)
     # status: Status <- probably not needed
