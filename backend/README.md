@@ -1,4 +1,4 @@
-# Backend – LeetCode Study Partner
+# Backend – MeetCode
 
 This is the FastAPI backend service for **MeetCode**. It provides authentication, user management, match coordination, and a review system for users.
 
