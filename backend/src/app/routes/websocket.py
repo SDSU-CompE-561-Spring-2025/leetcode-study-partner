@@ -46,14 +46,14 @@ html = """
                 message.appendChild(content)
                 messages.appendChild(message)
                 event.preventDefault()
+                ws.onmessage = function(event) {
+                    var messages = document.getElementById('messages')
+                    var message = document.createElement('li')
+                    var content = document.createTextNode(event.data)
+                    message.appendChild(content)
+                    messages.appendChild(message)
+                };
             }
-            ws.onmessage = function(event) {
-                var messages = document.getElementById('messages')
-                var message = document.createElement('li')
-                var content = document.createTextNode(event.data)
-                message.appendChild(content)
-                messages.appendChild(message)
-            };
             function sendMessage(event) {
                 var input = document.getElementById("messageText")
                 ws.send(input.value)
@@ -118,6 +118,7 @@ async def websocket_connect(websocket: WebSocket, db: Session = Depends(dependen
                         await websocket.send_json({"error": "Target user not connected"})
                         continue
                     await target_connection.send_json(signal_data.model_dump_json())
+                    continue
 
             if event == "create_ticket":
                 # Handle ticket creation
@@ -126,16 +127,19 @@ async def websocket_connect(websocket: WebSocket, db: Session = Depends(dependen
                 if not all(key in message for key in ["programming_languages", "categories"]):
                     await websocket.send_json({"error": "Invalid ticket data"})
                     continue
-            # Create a QueueTicket object and add it to the queue
-            ticketRequest = QueueTicketCreate(**message)
-            ticket = QueueTicket(
-                user_id=user.id,
-                programming_languages=ticketRequest.programming_languages,
-                categories=ticketRequest.categories,
-            )
-            print(ticket)
-            async with mm.queue_lock:
-                mm.queue[ticket.user_id] = ticket
+                # Create a QueueTicket object and add it to the queue
+                ticketRequest = QueueTicketCreate(**message)
+                ticket = QueueTicket(
+                    user_id=user.id,
+                    programming_languages=ticketRequest.programming_languages,
+                    categories=ticketRequest.categories,
+                )
+                print(ticket)
+                async with mm.queue_lock:
+                    mm.queue[ticket.user_id] = ticket
+                    continue
+            print("Unknown event type")
+            await websocket.send_json({"error": "Unknown event type"})
     except WebSocketDisconnect:
         print(f"WebSocket disconnected for user {user.id}")
         # Clean up the resources immediately when disconnection is detected
