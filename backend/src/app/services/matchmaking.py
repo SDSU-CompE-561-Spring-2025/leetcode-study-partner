@@ -71,10 +71,12 @@ async def create_matches_from_pairs(pairs: List[Tuple[QueueTicket,QueueTicket]],
 async def notify_matched_users(matched_pairs: List[Tuple[QueueTicket, QueueTicket]]):
     """Notify users that they have been matched."""
     async with websocket_lock:
+        print("Accessing websocket connections.")
         for pair in matched_pairs:
             host_id = pair[0].user_id
             guest_id = pair[1].user_id
             match_id = pair[0].resulting_matchID
+            print(f"Notifying host {host_id} and guest {guest_id} of match {match_id}")
             
             # Send notification to host
             if host_id in websocket_connections:

@@ -1,4 +1,5 @@
 from app.core.auth import decode_access_token
+from app.schemas.matchmaking import WebRTCSignal
 from app.schemas.queue import QueueTicket, QueueTicketCreate
 from fastapi.responses import HTMLResponse
 from app.schemas.user import UserResponse, UserCreate
@@ -38,7 +39,7 @@ html = """
             var ws;
             function sendConnect(event) {
                 var input = document.getElementById("jwt_token")
-                ws = new WebSocket("ws://localhost:8000/ws/connect?token=" + input.value);
+                ws = new WebSocket("wss://localhost:8000/ws/connect?token=" + input.value);
                 var messages = document.getElementById('messages')
                 var message = document.createElement('li')
                 var content = document.createTextNode("Connected to WebSocket")
@@ -101,6 +102,22 @@ async def websocket_connect(websocket: WebSocket, db: Session = Depends(dependen
                         del mm.queue[user.id]
                         print(f"Removed user {user.id} from queue due to disconnection")
                 break
+            if event == "signal":
+                try:
+                    signal_data = WebRTCSignal(
+                        to = message.get("to"),
+                        data = message.get("data")
+                    )
+                except Exception as e:
+                    print(f"Error parsing signal data: {e}")
+                    await websocket.send_json({"error": "Invalid signal data"})
+                    continue
+                async with mm.websocket_lock:
+                    target_connection = mm.websocket_connections.get(signal_data.to)
+                    if not target_connection:
+                        await websocket.send_json({"error": "Target user not connected"})
+                        continue
+                    await target_connection.send_json(signal_data.model_dump_json())
 
             if event == "create_ticket":
                 # Handle ticket creation
