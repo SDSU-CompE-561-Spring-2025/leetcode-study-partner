@@ -117,7 +117,7 @@ async def websocket_connect(websocket: WebSocket, db: Session = Depends(dependen
                     if not target_connection:
                         await websocket.send_json({"error": "Target user not connected"})
                         continue
-                    await target_connection.send_json(signal_data.model_dump_json())
+                    await target_connection.send_json(signal_data.model_dump())
                     continue
 
             if event == "create_ticket":
