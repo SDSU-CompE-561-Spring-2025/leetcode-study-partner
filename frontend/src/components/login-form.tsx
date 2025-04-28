@@ -20,7 +20,7 @@ export function LoginForm({
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome!</CardTitle>
           <CardDescription>
-            Login with your Apple or Google account
+            Sign in with your Apple or Google account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -34,7 +34,7 @@ export function LoginForm({
                       fill="currentColor"
                     />
                   </svg>
-                  Login with Apple
+                  Sign in with Apple
                 </Button>
                 <Button variant="outline" className="w-full">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -43,7 +43,7 @@ export function LoginForm({
                       fill="currentColor"
                     />
                   </svg>
-                  Login with Google
+                  Sign in with Google
                 </Button>
               </div>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -57,7 +57,7 @@ export function LoginForm({
                   <Input
                     id="email"
                     type="email"
-                    placeholder="m@example.com"
+                    placeholder="example@meetcode.com"
                     required
                   />
                 </div>
@@ -88,7 +88,7 @@ export function LoginForm({
         </CardContent>
       </Card>
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
+        By continuing, you agree to our <a href="#">Terms of Service</a>{" "}
         and <a href="#">Privacy Policy</a>.
       </div>
     </div>
