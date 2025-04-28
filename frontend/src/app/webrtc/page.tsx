@@ -15,6 +15,8 @@ import {
 
 import React, { useState } from 'react';
 
+import { getMicAndCamera } from "../../../features/webrtc/hooks/scripts";
+
 export default function WebRTC() {
     const [widthVid, setWidthVid] = useState<number>(1280);
     const [heightVid, setHeightVid] = useState<number>(720);
@@ -31,7 +33,7 @@ export default function WebRTC() {
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-4 p-4">
             <div className="buttons col-span-1 flex flex-col space-y-2">
                 {/* Share Mic and Camera Button */}
-                <Button className="w-full">Share my mic and camera</Button>
+                <Button className="w-full" onClick={getMicAndCamera}>Share my mic and camera</Button>
 
                 {/* Show and Stop Video Buttons */}
                 <Button className="w-full">Show My Video</Button>
