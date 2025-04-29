@@ -19,7 +19,7 @@ function Logo() {
 					'bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-3xl leading-tight text-transparent'
 				}
 			>
-				Meet2Code
+				MeetCode
 			</p>
 		</Link>
 	);
