@@ -22,6 +22,7 @@ class Match(Base):
 
     host = relationship("User", foreign_keys=[host_id], back_populates="matches_as_host")
     guest = relationship("User", foreign_keys=[guest_id], back_populates="matches_as_guest")
+    
     problem = relationship("Problem", backref=backref("matches"))
 
     __table_args__ = (
