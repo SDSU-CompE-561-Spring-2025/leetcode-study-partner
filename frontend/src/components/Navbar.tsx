@@ -32,24 +32,25 @@ const navList = [
 function Navbar() {
   return (
     <div className="hidden border-separate border-b bg-background md:block">
-      <nav className="flex items-center justify-between h-[80px] px-8 w-full max-w-screen-xl mx-auto">
-        <div className="flex items-center gap-x-4">
-          <Logo />
-        </div>
-
-        <div className="flex items-center justify-center flex-1 gap-x-6">
-          {navList.map((item) => (
-            <NavbarItem
-              key={item.label}
-              link={item.link}
-              label={item.label}
-            />
-          ))}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <ThemeSwitcherButton />
-          <div className="transform translate-y-[-8px]">
+      <nav className=" w-full max-w-screen-xl">
+        <div className="flex h-[80px] items-center">
+          <div className="flex-auto">
+            <Logo />
+          </div>
+          
+          <div className="flex-1/7 justify-center">
+            <div className="flex items-center gap-x-8">
+              {navList.map((item) => (
+                <NavbarItem
+                  key={item.label}
+                  link={item.link}
+                  label={item.label}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="absolute right-0 flex justify-end items-end gap-4 mx-3">
+            <ThemeSwitcherButton />
             <UserButton />
           </div>
         </div>

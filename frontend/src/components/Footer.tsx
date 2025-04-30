@@ -2,32 +2,32 @@ import Link from 'next/link';
 
 export default function Footer() {
 	return (
-		<footer className="absulute bottom-0 bg-gray-900 text-white py-8 mt-20">
-			<div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center justify-between">
+		<footer className="fixed bottom-0 left-0 right-0 w-full bg-background border-t text-foreground py-6">
+			<div className="w-full px-4 md:px-8 flex flex-col md:flex-row items-center justify-between">
 				<div className="flex items-center space-x-4">
 					<Link
-						className="text-white hover:text-gray-300"
+						className="text-foreground hover:text-muted-foreground"
 						href="#"
 					>
 						<YoutubeIcon className="h-6 w-6" />
 						<span className="sr-only">YouTube</span>
 					</Link>
 					<Link
-						className="text-white hover:text-gray-300"
+						className="text-foreground hover:text-muted-foreground"
 						href="#"
 					>
 						<GithubIcon className="h-6 w-6" />
 						<span className="sr-only">GitHub</span>
 					</Link>
 					<Link
-						className="text-white hover:text-gray-300"
+						className="text-foreground hover:text-muted-foreground"
 						href="#"
 					>
 						<TwitterIcon className="h-6 w-6" />
 						<span className="sr-only">Twitter</span>
 					</Link>
 				</div>
-				<p className="mt-4 md:mt-0 text-sm text-gray-300">
+				<p className="mt-4 md:mt-0 text-sm text-muted-foreground">
 					&copy; 2025 Meet2Code. All rights reserved.
 				</p>
 			</div>

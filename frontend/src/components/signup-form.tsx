@@ -14,8 +14,12 @@ import { Label } from "@/components/ui/label";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { toast } from "sonner";
+import { API_HOST_BASE_URL } from "@/lib/constants";
 
   const signUpSchema = z.object({
+    username: z.string().min(3, "Username must be at least 3 characters long"),
     email: z.string().email(),
     password: z.string().min(8, "Password must be at least 8 characters long"),
     confirmPassword: z.string().min(8, "Password must be at least 8 characters long"),
@@ -32,14 +36,28 @@ export function SignUpForm({
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
+      username: "",
       email: "",
       password: "",
       confirmPassword: "",
     },
   });
 
-  const onSubmit = (data: z.infer<typeof signUpSchema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
+    try {
+      const { username, email, password } = data;
+      await axios.post(`${API_HOST_BASE_URL}auth/register`, {
+        username,
+        email,
+        password,
+      });
+      toast.success("Account created successfully!");
+      form.reset();
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.detail || "Failed to create account."
+      );
+    }
   };
 
   return (
@@ -81,6 +99,15 @@ export function SignUpForm({
               </div>
 
               <div className="grid gap-6">
+                <div className="grid gap-2">
+                  <Label htmlFor="username">User Name</Label>
+                  <Input
+                    id="username"
+                    type="username"
+                    placeholder="Username"
+                    {...form.register("username")}
+                  />
+                </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
