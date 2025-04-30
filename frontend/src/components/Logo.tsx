@@ -8,8 +8,8 @@ function Logo() {
 			className={'flex items-center gap-2'}
 		>
 			<Image
-				src="/meetcode.png"
-				alt="MeetCode Logo"
+				src="/meet2code.png"
+				alt="Meet2Code Logo"
 				width={44}
 				height={44}
 				className="rounded-full"

@@ -19,8 +19,13 @@ class UserData(Base):
     last_login = Column(DateTime, default=datetime.now(UTC))
     updated_at = Column(DateTime, default=datetime.now(UTC), onupdate=datetime.now(UTC))
 
+    last_match_at = Column(DateTime, default=datetime.now(UTC))
+    current_streak = Column(Integer, default=0)
+    longest_streak = Column(Integer, default=0)
+    
     user = relationship("User", back_populates="user_data")
 
     __table_args__ = (
         Index('ix_user_data_user_id', 'user_id'),
     )
+    

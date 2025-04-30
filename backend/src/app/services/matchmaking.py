@@ -60,11 +60,11 @@ async def create_matches_from_pairs(pairs: List[Tuple[QueueTicket,QueueTicket]],
             problemID=problem_id
         )
         created_match = match_service.create_match(db, match)
-        created_match_ids.append(created_match.matchID)
+        created_match_ids.append(created_match.match_id)
         
         # Update the tickets with the resulting match ID
-        pair[0].resulting_matchID = created_match.matchID
-        pair[1].resulting_matchID = created_match.matchID
+        pair[0].resulting_match_id = created_match.match_id
+        pair[1].resulting_match_id = created_match.match_id
     
     return created_match_ids
 
@@ -75,7 +75,7 @@ async def notify_matched_users(matched_pairs: List[Tuple[QueueTicket, QueueTicke
         for pair in matched_pairs:
             host_id = pair[0].user_id
             guest_id = pair[1].user_id
-            match_id = pair[0].resulting_matchID
+            match_id = pair[0].resulting_match_id
             print(f"Notifying host {host_id} and guest {guest_id} of match {match_id}")
             
             # Send notification to host
