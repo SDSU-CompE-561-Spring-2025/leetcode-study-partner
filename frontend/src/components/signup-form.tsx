@@ -53,6 +53,7 @@ export function SignUpForm({
       });
       toast.success("Account created successfully!");
       form.reset();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(
         error.response?.data?.detail || "Failed to create account."
@@ -142,7 +143,7 @@ export function SignUpForm({
 
               <div className="text-center text-sm">
                 Already have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
+                <a href="/login" className="underline underline-offset-4">
                   Sign in
                 </a>
               </div>
