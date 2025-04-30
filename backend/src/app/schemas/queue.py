@@ -36,7 +36,7 @@ class QueueTicket(BaseModel):
     categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$", max_length=32)], min_length=1, max_length=5)
     # status: Status <- probably not needed
     queued_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    resulting_matchID: UUID | None = None
+    resulting_match_id: UUID | None = None
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True
