@@ -24,7 +24,7 @@ def create_match(db: Session, match: MatchCreate):
         match_id=new_match_id,
         host_id=match.host_id,
         guest_id=match.guest_id,
-        problemID=match.problemID
+        problem_id=match.problem_id
     )
     
     db.add(new_match)
