@@ -55,9 +55,9 @@ async def create_matches_from_pairs(pairs: List[Tuple[QueueTicket,QueueTicket]],
         problem_id = await find_problem_id_from_preferences(shared_categories, db)
         
         match = MatchCreate(
-            hostID=pair[0].user_id,
-            guestID=pair[1].user_id,
-            problemID=problem_id
+            host_id=pair[0].user_id,
+            guest_id=pair[1].user_id,
+            problem_id=problem_id
         )
         created_match = match_service.create_match(db, match)
         created_match_ids.append(created_match.match_id)
