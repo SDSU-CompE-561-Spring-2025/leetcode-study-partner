@@ -24,6 +24,6 @@ class User(Base):
     user_data = relationship("UserData", back_populates="user", cascade="all, delete-orphan")
     reviews_as_host = relationship("Review", foreign_keys="Review.host_id", back_populates="host", cascade="all, delete-orphan")
     reviews_as_guest = relationship("Review", foreign_keys="Review.guest_id", back_populates="guest", cascade="all, delete-orphan")
-    matches_as_host = relationship("Match", foreign_keys="Match.hostID", back_populates="host", cascade="all, delete-orphan")
-    matches_as_guest = relationship("Match", foreign_keys="Match.guestID", back_populates="guest", cascade="all, delete-orphan")
+    matches_as_host = relationship("Match", foreign_keys="Match.host_id", back_populates="host", cascade="all, delete-orphan")
+    matches_as_guest = relationship("Match", foreign_keys="Match.guest_id", back_populates="guest", cascade="all, delete-orphan")
     refresh_tokens = relationship("RefreshToken", back_populates="user", cascade="all, delete-orphan")

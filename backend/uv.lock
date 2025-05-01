@@ -30,6 +30,7 @@ name = "app"
 source = { editable = "." }
 dependencies = [
     { name = "bandit" },
+    { name = "bcrypt" },
     { name = "fastapi", extra = ["all"] },
     { name = "hatch" },
     { name = "passlib", extra = ["bcrypt"] },
@@ -46,6 +47,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "bandit", specifier = ">=1.8.3" },
+    { name = "bcrypt", specifier = ">=4.0.1" },
     { name = "fastapi", extras = ["all"] },
     { name = "hatch", specifier = ">=1.14.0" },
     { name = "passlib", extras = ["bcrypt"], specifier = ">=1.7.4" },

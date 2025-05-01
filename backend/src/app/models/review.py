@@ -8,7 +8,7 @@ class Review(Base):
     __tablename__ = "reviews"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    match_id = Column(UUID(as_uuid=True), ForeignKey("match.matchID"), nullable=False)
+    match_id = Column(UUID(as_uuid=True), ForeignKey("match.match_id"), nullable=False)
     to_host_rating = Column(Integer, nullable=False)
     to_guest_rating = Column(Integer, nullable=False)
     to_host_comment = Column(String, nullable=True)
