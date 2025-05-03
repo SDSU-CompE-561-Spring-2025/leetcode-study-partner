@@ -29,9 +29,9 @@ export default function DashboardMain() {
         </div>
 
         {/* Find Match Button (centered) */}
-        <div className="flex justify-center mt-10">
+        <div className="flex justify-center mt-20">
           <Link href="/matchmaking">
-            <Button size="lg" className="bg-[#F67E21] hover:bg-orange-600 text-white px-8 py-4 text-lg font-bold">
+            <Button size="lg" className="bg-[#F67E21] hover:bg-orange-600 text-white text-3xl font-extrabold px-20 py-8 rounded-2xl shadow-xl">
               Find Match
             </Button>
           </Link>

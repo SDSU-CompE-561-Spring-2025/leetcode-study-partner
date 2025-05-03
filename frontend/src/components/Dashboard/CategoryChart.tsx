@@ -28,11 +28,25 @@ export default function CategoryChart() {
               cx="50%"
               cy="50%"
               outerRadius={120}
-              label={({ name, x, y }) => (
-                <text x={x} y={y} fill="#fff" fontSize={14} textAnchor="middle">
-                  {name}
-                </text>
-              )}
+              label={({ name, midAngle, outerRadius, cx, cy }) => {
+                const RADIAN = Math.PI / 180;
+                const radius = outerRadius + 20; // push label out
+                const xPos = cx + radius * Math.cos(-midAngle * RADIAN);
+                const yPos = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                return (
+                  <text
+                    x={xPos}
+                    y={yPos}
+                    fill="#fff"
+                    fontSize={16}
+                    textAnchor={xPos > cx ? 'start' : 'end'}
+                    dominantBaseline="central"
+                  >
+                    {name}
+                  </text>
+                );
+              }}
             >
               {mockCategoryData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -40,13 +54,15 @@ export default function CategoryChart() {
             </Pie>
             <Tooltip
              contentStyle={{
-             backgroundColor: "#2A2E34",
-             border: "none",
+             backgroundColor: "#3B3F46",
+             border: "1px solid #4A4F55",
              borderRadius: "8px",
              color: "#fff",
-             fontSize: "12px",
-             padding: "8px",
+             fontSize: "13px",
+             padding: "10px",
                 }}
+            labelStyle={{ color: "#fff" }} 
+            itemStyle={{ color: "#fff" }}  
             formatter={(value, name) => [`${value} problems`, `${name}`]}
             />
           </PieChart>
