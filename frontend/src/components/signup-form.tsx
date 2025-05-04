@@ -2,13 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { z } from "zod";
@@ -17,22 +11,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { toast } from "sonner";
 import { API_HOST_BASE_URL } from "@/lib/constants";
+import { useRouter } from "next/navigation";
 
-  const signUpSchema = z.object({
-    username: z.string().min(3, "Username must be at least 3 characters long"),
-    email: z.string().email(),
-    password: z.string().min(8, "Password must be at least 8 characters long"),
-    confirmPassword: z.string().min(8, "Password must be at least 8 characters long"),
-  }).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-  
+const signUpSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters long"),
+  email: z.string().email(),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
+  confirmPassword: z.string().min(8, "Password must be at least 8 characters long"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
 
-export function SignUpForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
+  const router = useRouter();
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -52,12 +44,10 @@ export function SignUpForm({
         password,
       });
       toast.success("Account created successfully!");
+      router.push('/login');
       form.reset();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      toast.error(
-        error.response?.data?.detail || "Failed to create account."
-      );
+      toast.error(error.response?.data?.detail || "Failed to create account.");
     }
   };
 

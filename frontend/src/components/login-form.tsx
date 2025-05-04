@@ -1,32 +1,24 @@
-"use client"
+"use client";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { toast } from "sonner"
-import { API_HOST_BASE_URL } from "@/lib/constants"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import axios from "axios"
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const loginSchema = z.object({
   username: z.string().min(3, 'Username is required, must be at least 3 characters'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -39,29 +31,36 @@ export function LoginForm({
 
   const onSubmit = async (data: { username: string; password: string }) => {
     try {
-      const params = new URLSearchParams();
-      params.append('username', data.username);
-      params.append('password', data.password);
-      const response = await axios.post(`${API_HOST_BASE_URL}auth/token`, params, {
-        withCredentials: true,
-      });
-      const result = response.data;
-      localStorage.setItem('accessToken', result.access_token);
-      if (result.refresh_token) {
-        localStorage.setItem('refreshToken', result.refresh_token);
-      }
-      toast('Login successful: You are now signed in');
-      window.location.href = '/dashboard';
-    } catch (error: unknown) {
-      let errorMessage = 'Login failed';
-    
-      if (axios.isAxiosError(error)) {
-        if (error.response?.data?.message) {
-          errorMessage = error.response.data.message;
-        }
-      }
+      const searchParams = new URLSearchParams(window.location.search);
+      const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
-      toast('Login failed: ' + errorMessage);
+      const result = await signIn('credentials', {
+        username: data.username,
+        password: data.password,
+        callbackUrl,
+        redirect: false,
+      });
+
+      console.log('signIn result:', result);
+
+      if (result?.ok && result.url) {
+        console.log('Redirecting to:', result.url);
+        try {
+          await router.push(result.url);
+        } catch (navError) {
+          console.error('Navigation error:', navError);
+          toast.error('Failed to redirect. Please try again.');
+        }
+      } else if (result?.error === 'CredentialsSignin') {
+        toast.error('Invalid username or password');
+      } else if (result?.error) {
+        toast.error(`Login failed: ${result.error}`);
+      } else {
+        toast.error('An unknown error occurred');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      toast.error('An error occurred during login');
     }
   };
 

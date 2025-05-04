@@ -1,43 +1,45 @@
-import React from 'react';
+import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { User } from 'lucide-react';
-import { LogOut } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { LogOut } from 'lucide-react';
 
 function UserButton() {
+  const { data: session } = useSession();
+
+  if (!session) return null;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" aria-label="User Menu">
-		<Avatar className="h-[1.8rem] w-[1.8rem]">
-			<AvatarImage src={User?.name} />
-			<AvatarFallback>
-				{User?.name
-				? User.name
-					.split(' ')
-					.map((n) => n[0])
-					.slice(0, 2)
-					.join('')
-					.toUpperCase()
-				: '??'}
-			</AvatarFallback>
-			</Avatar>
+          <Avatar>
+            {session.user?.image ? (
+              <AvatarImage src={session.user.image} />
+            ) : (
+              <AvatarFallback>
+                {session.user?.name
+                  ? session.user.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .slice(0, 2)
+                      .join('')
+                      .toUpperCase()
+                  : '??'}
+              </AvatarFallback>
+            )}
+          </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-[1px]">
-        <DropdownMenuItem className='flex items-center justify-between px-2 py-1'>
-			Profile
-		  <User className="h-4 w-4"/>
-		</DropdownMenuItem>
-        <DropdownMenuItem className='flex items-center justify-between px-2 py-1'>
-			Log out
-          <LogOut className="h-4 w-4"/>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem asChild>
+          <a href="/account" className="flex items-center justify-between w-full">
+            Profile
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/' })}>
+          Log out
+          <LogOut className="h-4 w-4" />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
