@@ -19,15 +19,6 @@ class Match(Base):
     duration = Column(Integer, default=0)
 
     problem_id = Column(Integer, ForeignKey("problems.id"), index=True)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
-    host = relationship("User", foreign_keys=[host_id], back_populates="matches_as_host")
-    guest = relationship("User", foreign_keys=[guest_id], back_populates="matches_as_guest")
->>>>>>> d3e9def56e57ef205b470c2faa52b1c2f8ec8ae9
-=======
->>>>>>> 9c41fcb5c32e234d148c6c534c861f1c8b522f03
 
     host = relationship("User", foreign_keys=[host_id], back_populates="matches_as_host")
     guest = relationship("User", foreign_keys=[guest_id], back_populates="matches_as_guest")
