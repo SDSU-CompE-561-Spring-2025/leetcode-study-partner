@@ -7,7 +7,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { ThemeSwitcherButton } from '@/components/ThemeSwitcherButton';
-import UserButton from '@/components/UserButton';
+// import UserButton from '@/components/UserButton';
 import { useState } from 'react';
 
 const navList = [

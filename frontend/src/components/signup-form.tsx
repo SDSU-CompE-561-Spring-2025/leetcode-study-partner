@@ -46,8 +46,12 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
       toast.success("Account created successfully!");
       router.push('/login');
       form.reset();
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || "Failed to create account.");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.detail || "Failed to create account.");
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     }
   };
 
