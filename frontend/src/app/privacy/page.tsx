@@ -1,3 +1,5 @@
-export default function Privacy() {
-	return <h1>Privacy Page </h1>;
+import { PrivacyPolicy } from "@/components/privacy-policy";
+
+export default function TermsPage() {
+  return <PrivacyPolicy />;
 }
