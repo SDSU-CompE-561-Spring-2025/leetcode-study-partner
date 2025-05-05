@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button";
 import useDashboardData from "@/hooks/useDashboardData";
 
 export default function DashboardMain() {
-  const user_id = "user-id-here"; // TODO: replace with auth stuff 
-  const { streak, categories, matchHistory, loading, error } = useDashboardData(user_id);
+  const user_id = "user-id-here"; // TODO: replace with auth stuff
+  // TODO: UNCOMMENT BELOW WHEN AUTH IS FIGURED OUT  
+//   const { streak, categories, matchHistory, loading, error } = useDashboardData(user_id);
   
-  if (loading) return <p className="text-white text-center mt-10">Loading dashboard...</p>;
-  if (error) return <p className="text-red-500 text-center mt-10">{error}</p>;
+//   if (loading) return <p className="text-white text-center mt-10">Loading dashboard...</p>;
+//   if (error) return <p className="text-red-500 text-center mt-10">{error}</p>;
   
   return (
     <div className="min-h-screen bg-[#1E2328] text-white">
@@ -25,13 +26,33 @@ export default function DashboardMain() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Left side: Streak and CategoryChart */}
           <div className="flex flex-col gap-6 md:col-span-2">
-            <Streak streak={streak} />
-            <CategoryChart categories={categories} />
+
+            {/* TODO: UNCOMMENT BELOW WHEN AUTH STUFF IS FIGURED OUT */}
+            {/* <Streak streak={streak} />
+            <CategoryChart categories={categories} /> */}
+
+            {/* DELTE WHEN AUTH IS FIGURED OUT - MOCK VALUES TO AVOID SITE SAYING FAILED TO LOAD DASHBOARD */}
+            <Streak streak={12} />
+            <CategoryChart categories={[
+                { name: "Arrays", value: 4 },
+                { name: "Strings", value: 2 },
+                { name: "Graphs", value: 1 }
+            ]} />
+
           </div>
 
           {/* Right side: Match History */}
           <div className="flex flex-col gap-6">
-            <MatchHistory matchHistory={matchHistory} />
+
+            {/* TODO: UNCOMMENT BELOW WHEN AUTH STUFF IS FIGURED OUT */}
+            {/* <MatchHistory matchHistory={matchHistory} /> */}
+            
+            {/* DELTE WHEN AUTH IS FIGURED OUT - MOCK VALUES TO AVOID SITE SAYING FAILED TO LOAD DASHBOARD */}
+            <MatchHistory matchHistory={[
+                { problem_id: 101, category: "Arrays", status: true },
+                { problem_id: 102, category: "Graphs", status: false },
+                { problem_id: 103, category: "Strings", status: true }
+            ]} />
           </div>
         </div>
 
