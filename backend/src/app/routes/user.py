@@ -1,7 +1,7 @@
 from datetime import timedelta
 from app.core.auth import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS, oauth2_scheme, create_access_token, create_refresh_token, decode_refresh_token
 from app.models.token import RefreshToken
-from app.schemas.token import Token
+from app.schemas.token import Token, RefreshTokenRequest
 from app.schemas.user import DeleteUserRequest, UserResponse, UserCreate, UserUpdateRequest
 from fastapi import APIRouter, Depends, Security
 
@@ -53,8 +53,9 @@ async def login_for_access_token(
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
 @router.post("/refresh")
-def refresh_token(refresh_token: str, db: Session = Depends(get_db)):
-
+def refresh_token(request: RefreshTokenRequest, db: Session = Depends(get_db)):
+    refresh_token = request.refresh_token
+    
     token_in_db = db.query(RefreshToken).filter_by(token=refresh_token).first()
     if not token_in_db:
         raise HTTPException(status_code=401, detail="Invalid refresh token")
@@ -65,7 +66,8 @@ def refresh_token(refresh_token: str, db: Session = Depends(get_db)):
     return {"access_token": new_access_token, "token_type": "bearer"}
 
 @router.post("/logout")
-def logout(refresh_token: str, db: Session = Depends(get_db)):
+def logout(request: RefreshTokenRequest, db: Session = Depends(get_db)):
+    refresh_token = request.refresh_token
     success = token_service.delete_token(db=db, refresh_token=refresh_token)
     if not success:
         raise HTTPException(status_code=401, detail="Invalid refresh token")
