@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import useDashboardData from "@/hooks/useDashboardData";
 
 export default function DashboardMain() {
-  const user_id = "user-id-here"; // TODO: replace with real user ID
+  const user_id = "user-id-here"; // TODO: replace with auth stuff 
   const { streak, categories, matchHistory, loading, error } = useDashboardData(user_id);
   
   if (loading) return <p className="text-white text-center mt-10">Loading dashboard...</p>;
@@ -26,7 +26,7 @@ export default function DashboardMain() {
           {/* Left side: Streak and CategoryChart */}
           <div className="flex flex-col gap-6 md:col-span-2">
             <Streak streak={streak} />
-            <CategoryChart />
+            <CategoryChart categories={categories} />
           </div>
 
           {/* Right side: Match History */}

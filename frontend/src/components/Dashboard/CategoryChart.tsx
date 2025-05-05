@@ -3,15 +3,13 @@
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
-const mockCategoryData = [
-  { name: "Arrays", value: 4 },
-  { name: "Strings", value: 2 },
-  { name: "Graphs", value: 1 },
-];
-
 const COLORS = ["#FED7AA", "#FDBA74", "#FB923C", "#F97316", "#EA580C"];
 
-export default function CategoryChart() {
+interface CategoryChartProps {
+    categories: { name: string; value: number }[];
+}
+  
+export default function CategoryChart({ categories }: CategoryChartProps) {
   return (
     <Card className="bg-[#2A2E34] text-white">
       <CardHeader>
@@ -22,7 +20,7 @@ export default function CategoryChart() {
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={mockCategoryData}
+              data={categories}
               dataKey="value"
               nameKey="name"
               cx="50%"
@@ -48,7 +46,7 @@ export default function CategoryChart() {
                 );
               }}
             >
-              {mockCategoryData.map((entry, index) => (
+              {categories.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
