@@ -2,7 +2,11 @@
 
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
-export default function Streak() {
+interface StreakProps {
+    streak: number | null;
+}
+
+export default function Streak({ streak }: StreakProps) {
   return (
     <Card className="bg-[#2A2E34] text-white">
       <CardHeader>
@@ -10,7 +14,10 @@ export default function Streak() {
       </CardHeader>
       <CardContent>
         <p className="text-lg">
-          Current Streak: <span className="text-[#F67E21] font-semibold">12 days</span>
+          Current Streak:{" "} 
+          <span className="text-[#F67E21] font-semibold">
+            {streak !== null ? `${streak} days` : "Loading..."}
+          </span>
         </p>
         <p className="text-sm text-muted-foreground">
           Streak ends after 36 hours of inactivity.
