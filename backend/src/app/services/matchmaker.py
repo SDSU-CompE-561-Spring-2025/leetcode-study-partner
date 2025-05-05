@@ -96,6 +96,11 @@ class MatchmakingService:
         return db_match.match_id
     
     async def notify_match(self, user_id: UUID, match_id: UUID, peer_id: UUID, role: str):
+        print(f"[notify_match] Notifying {user_id} with match {match_id}")
+
+        if not websocket:
+            print(f"[notify_match] No websocket found for {user_id}")
+
         async with self.conn_lock:
             websocket = self.connections.get(user_id)
 
@@ -119,6 +124,7 @@ class MatchmakingService:
     async def execute_matchmaking_cycle(self, db: Session):
         """Full matchmaking workflow (run every few seconds)"""
         pairs = await self.find_pairs()
+        print(f"[matchmaker] Pairs found: {pairs}")
         if not pairs:
             return
 

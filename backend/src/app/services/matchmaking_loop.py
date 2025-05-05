@@ -9,6 +9,7 @@ async def matchmaking_loop():
 
     try:
         while True:
+            print("[matchmaking_loop] Running matchmaking tick...")
             await matchmaking_service.execute_matchmaking_cycle(db)
             await asyncio.sleep(2)
     finally:

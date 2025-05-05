@@ -15,26 +15,25 @@ settings = get_settings()
 # MATCH CRUD
 
 # CREATE - Create match
-def create_match(db: Session, match: MatchCreate):
-    new_match_id: UUID = uuid.uuid4()
+def create_match(db: Session, match_data: MatchCreate):
     
-    check_same_users(db, match.host_id, match.guest_id)
     
-    new_match = Match(
-        match_id=new_match_id,
-        host_id=match.host_id,
-        guest_id=match.guest_id,
-        problem_id=match.problem_id
+    check_same_users(db, match_data.host_id, match_data.guest_id)
+    
+    db_match = Match(
+        host_id=match_data.host_id,
+        guest_id=match_data.guest_id,
+        problem_id=match_data.problem_id
     )
     
-    db.add(new_match)
+    db.add(db_match)
     db.commit()
-    db.refresh(new_match)
+    db.refresh(db_match)
     
     print( {
-        "message": "Match created successfully",
-        "match_id": new_match_id} )
-    return new_match
+        "message": "Match created successfully",} )
+    
+    return db_match
 
 # UPDATE - Start match
 def start_match(db: Session, match_id: UUID):
