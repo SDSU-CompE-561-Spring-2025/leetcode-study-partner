@@ -8,6 +8,8 @@ import asyncio
 
 from fastapi import Depends, WebSocket
 from starlette.websockets import WebSocketDisconnect
+from app.models.problem import Problem
+import random
 
 # global matchmaking queue
 queue: dict[UUID, QueueTicket] = {}
@@ -42,11 +44,36 @@ async def find_matchmaking_pairs():
 
         return matched_pairs
 
-async def find_problem_id_from_preferences(categories: List[str], db: Session = None):
-    # Placeholder function to find a problem ID based on user preferences
-    # This should be replaced with actual logic to find a problem ID from the database
-    # For now, return a simple value
-    return 1
+async def find_problem_id_from_preferences(allow_uncategorized: bool, categories: list[str], db: Session = None):
+    # Query problems that share at least one category or are uncategorized if allowed
+    query = db.query(Problem)
+    if categories:
+        query = query.filter(
+            (Problem.categories.overlap(categories)) |
+            ((allow_uncategorized) & (Problem.categories == None))
+        )
+    elif allow_uncategorized:
+        query = query.filter(Problem.categories == None)
+    else:
+        return None
+    problems = query.all()
+    if not problems:
+        return None
+
+    # Score problems by number of shared categories
+    scored = []
+    for p in problems:
+        if p.categories:
+            shared = len(set(p.categories) & set(categories))
+        else:
+            shared = 0
+        scored.append((p, shared))
+    # Sort by shared count descending
+    scored.sort(key=lambda x: x[1], reverse=True)
+    # Weighted random selection: more weight for higher shared count
+    weights = [max(1, s[1]) for s in scored]
+    selected = random.choices(scored, weights=weights, k=1)[0][0]
+    return selected.problem_id
 
 async def create_matches_from_pairs(pairs: List[Tuple[QueueTicket,QueueTicket]], db: Session):
     created_match_ids = []

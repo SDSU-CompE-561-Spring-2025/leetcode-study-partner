@@ -43,6 +43,7 @@ dependencies = [
   "ruff>=0.9.7",
   "sqlalchemy>=2.0.38",
   "websockets>=15.0.1",
+  "pandas>=2.2.3",
 ]
 
 [project.urls]
