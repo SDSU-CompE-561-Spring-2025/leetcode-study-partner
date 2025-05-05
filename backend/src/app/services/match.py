@@ -33,12 +33,12 @@ def create_match(db: Session, match: MatchCreate):
     
     print( {
         "message": "Match created successfully",
-        "matchID": new_match_id} )
+        "match_id": new_match_id} )
     return new_match
 
 # UPDATE - Start match
 def start_match(db: Session, match_id: UUID):
-    check_matchID(db, match_id)
+    check_match_id(db, match_id)
     
     db_match = db.query(Match).filter(Match.match_id == match_id).first()
 
@@ -84,8 +84,8 @@ def get_all_matches(db: Session, reqBody: UUID):
 ####### Helper Function #######
 
 # Check if host and guest are the same
-def check_same_users(db: Session, hostID: UUID, guestID: UUID):
-    if hostID == guestID:
+def check_same_users(db: Session, host_id: UUID, guest_id: UUID):
+    if host_id == guest_id:
         raise HTTPException(status_code=400, detail="Host and guest cannot be the same")
     return
 

@@ -26,5 +26,5 @@ class Match(Base):
     problem = relationship("Problem", backref=backref("matches"))
 
     __table_args__ = (
-        Index('ix_matches_host_guest', 'hostID', 'guestID'),
+        Index('ix_matches_host_guest', 'host_id', 'guest_id'),
     )

@@ -10,7 +10,7 @@ class UserDataBase(BaseModel):
     updated_at: Optional[datetime] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserDataCreate(UserDataBase):
     user_id: UUID
