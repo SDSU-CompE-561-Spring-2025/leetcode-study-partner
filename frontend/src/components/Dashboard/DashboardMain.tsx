@@ -31,7 +31,7 @@ export default function DashboardMain() {
 
           {/* Right side: Match History */}
           <div className="flex flex-col gap-6">
-            <MatchHistory />
+            <MatchHistory matchHistory={matchHistory} />
           </div>
         </div>
 
