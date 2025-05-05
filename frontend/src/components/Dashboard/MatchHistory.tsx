@@ -15,9 +15,9 @@ interface MatchHistoryProps {
           <h2 className="text-xl font-semibold text-center text-white mb-4">Match History</h2>
           <div className="space-y-2">
           {/* using a Map here to remove any duplicate problemIDs — and then spreading it to turn it back into an array so we can map over it */}
-          {[...new Map(matchHistory.map(item => [item.problemID, item])).values()].map((match) => (
+          {[...new Map(matchHistory.map(item => [item.problem_id, item])).values()].map((match) => (
             <Card
-              key={match.problemID}
+              key={match.problem_id}
               className="bg-[#3B3F46] text-white rounded-md shadow-sm px-4 py-2"
             >
               <CardContent className="p-2 text-sm space-y-1">
