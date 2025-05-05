@@ -94,26 +94,47 @@ class MatchmakingService:
         
         db_match = match_service.create_match(db, match_data)
         return db_match.match_id
-
+    
     async def notify_match(self, user_id: UUID, match_id: UUID, peer_id: UUID, role: str):
-        """Send match notification to single user"""
         async with self.conn_lock:
             websocket = self.connections.get(user_id)
-        
+
         if not websocket:
-            print(f"User {user_id} disconnected before notification")
+            print(f"[notify_match] User {user_id} disconnected before notification")
             return
-        
+
         try:
             await websocket.send_json({
                 "event": "match_found",
                 "match_id": str(match_id),
-                "signaling_url": f"/call/{match_id}",  # New signaling endpoint
+                "signaling_url": f"/match/{match_id}",
                 "peer_id": str(peer_id),
                 "role": role
             })
         except Exception as e:
-            print(f"Failed to notify {user_id}: {e}")
+            print(f"[notify_match] Failed to notify {user_id}: {e}")
+        finally:
+            await self.unregister_connection(user_id)
+
+    async def execute_matchmaking_cycle(self, db: Session):
+        """Full matchmaking workflow (run every few seconds)"""
+        pairs = await self.find_pairs()
+        if not pairs:
+            return
+
+        for pair in pairs:
+            host, guest = pair
+
+            # Create match in DB
+            match_id = await self.create_match(pair, db)
+
+            # Send signaling info
+            await self.notify_match(host.user_id, match_id, guest.user_id, "host")
+            await self.notify_match(guest.user_id, match_id, host.user_id, "guest")
+
+            # Remove from queue (they’re moving on)
+            await self.remove_from_queue(host.user_id)
+            await self.remove_from_queue(guest.user_id)
 
     async def execute_matchmaking_cycle(self, db: Session):
         """Full matchmaking workflow"""
@@ -133,9 +154,6 @@ class MatchmakingService:
             # Cleanup
             await self.remove_from_queue(host.user_id)
             await self.remove_from_queue(guest.user_id)
-            
-            # Track processed pairs
-            self.matched_pairs.add((host.user_id, guest.user_id))
 
 # Singleton instance for the service
 matchmaking_service = MatchmakingService()
