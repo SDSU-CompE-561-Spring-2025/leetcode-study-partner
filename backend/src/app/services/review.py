@@ -7,7 +7,7 @@ from app.models.match import Match
 
 def create_review(db: Session, review: UserReviewCreate):
     
-    match = db.query(Match).filter(Match.matchID == review.match_id).first()
+    match = db.query(Match).filter(Match.match_id == review.match_id).first()
     if not match:
         raise HTTPException(status_code=404, detail="Match not found.")
     
@@ -16,7 +16,7 @@ def create_review(db: Session, review: UserReviewCreate):
         raise HTTPException(status_code=409, detail="Review already exists for this match.")
 
     db_review = Review(
-        match_id=match.matchID,
+        match_id=match.match_id,
         to_host_rating=review.to_host_rating,
         to_guest_rating=review.to_guest_rating,
         to_host_comment=review.to_host_comment,
