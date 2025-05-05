@@ -1,6 +1,6 @@
 from datetime import timedelta
 from app.core.auth import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
-from app.schemas.problem import ProblemCreate
+from app.schemas.problem import ProblemCreate, UniqueTagsResponse
 from app.schemas.token import Token
 from app.schemas.user import UserResponse, UserCreate
 from fastapi import APIRouter, Depends
@@ -21,6 +21,11 @@ from app.schemas.user_match_history import UserMatchHistory
 #from app.services.problem import ProblemService
 
 router = APIRouter()
+
+@router.get("/tags", response_model=UniqueTagsResponse)
+def get_unique_tags(db: Session = Depends(get_db)):
+    tags = problem_service.get_unique_tags(db)
+    return {"tags": tags}
 
 @router.post("/create", response_model=Problem)
 def create_problem(problem: ProblemCreate, db: Session = Depends(get_db)):

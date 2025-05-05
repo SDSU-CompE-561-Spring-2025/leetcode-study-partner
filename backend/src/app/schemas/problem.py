@@ -7,13 +7,23 @@ class Problem(BaseModel):
     problem_id: int
     problem_link: AnyHttpUrl
     methods_video_link: AnyHttpUrl
-    categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$", max_length=32)], min_length=1, max_length=5)
+    categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_\-\s\(\)]+$", max_length=32)], min_length=0, max_length=8)
 
 class ProblemCreate(BaseModel):
     problem_id: int
     problem_link: AnyHttpUrl
     methods_video_link: AnyHttpUrl
-    categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$", max_length=32)], min_length=1, max_length=5)
-    
+    categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_\-\s\(\)]+$", max_length=32)], min_length=0, max_length=8)
+
+class UniqueTagsResponse(BaseModel):
+    tags: list[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_\-\s\(\)]+$", max_length=64)]]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "tags": ["array", "of", "tags"]
+            }
+        }
+
 
 
