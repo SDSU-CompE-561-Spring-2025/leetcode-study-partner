@@ -8,7 +8,7 @@ function Logo() {
 			className={'flex items-center gap-2'}
 		>
 			<Image
-				src="/meetcode.png"
+				src="/meet2code.png"
 				alt="Meet2Code Logo"
 				width={44}
 				height={44}
@@ -19,7 +19,7 @@ function Logo() {
 					'bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-3xl leading-tight text-transparent'
 				}
 			>
-				Meet2Code
+				MeetCode
 			</p>
 		</Link>
 	);

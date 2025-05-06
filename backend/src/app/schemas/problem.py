@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import Annotated
 from pydantic import AnyHttpUrl, BaseModel, StringConstraints, conlist, constr, EmailStr, Field
+from typing import Literal
 
+Difficulty = Literal["easy", "medium", "hard"]
 class Problem(BaseModel):
     id: int
     problem_id: int

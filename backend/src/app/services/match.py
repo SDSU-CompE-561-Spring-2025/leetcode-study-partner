@@ -94,7 +94,7 @@ def check_match_id(db: Session, match_id: UUID):
         raise HTTPException(status_code=404, detail="Match not found")
     return
 
-def check_user(db: Session, userID: UUID):
-    if not db.query(User).filter(User.id == userID).first():
+def check_user(db: Session, user_id: UUID):
+    if not db.query(User).filter(User.id == user_id).first():
         raise HTTPException(status_code=404, detail="User not found")
     return

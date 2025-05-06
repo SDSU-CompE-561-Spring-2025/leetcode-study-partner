@@ -17,7 +17,8 @@ def create_problem(db: Session, problem: ProblemCreate) -> Problem:
         problem_id = problem.problem_id,
         problem_link = str(problem.problem_link),
         methods_video_link = str(problem.methods_video_link),
-        categories = problem.categories
+        categories = problem.categories,
+        difficulty = problem.difficulty
     )
     db.add(db_problem)
     db.commit()
@@ -40,6 +41,7 @@ def update_problem(db: Session, lc_id: int, problem_update: ProblemCreate):
     existing_problem.problem_link = str(problem_update.problem_link),
     existing_problem.methods_video_link = str(problem_update.methods_video_link),
     existing_problem.categories = problem_update.categories
+    existing_problem.difficulty = problem_update.difficulty
     db.commit()
     db.refresh(existing_problem)
     return existing_problem
