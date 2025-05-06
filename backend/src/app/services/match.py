@@ -31,9 +31,10 @@ def create_match(db: Session, match: MatchCreate):
     db.commit()
     db.refresh(new_match)
     
-    print( {
+    print({
         "message": "Match created successfully",
-        "match_id": new_match_id} )
+        "match_id": new_match_id
+    })
     return new_match
 
 # UPDATE - Start match
@@ -69,17 +70,15 @@ def get_match_details(db: Session, match_id: UUID):
     return db.query(Match).filter(Match.match_id == match_id).first()
 
 # READ - Get all matches for a user
-def get_all_matches(db: Session, reqBody: UUID):
-    
-    check_user(db, reqBody)
+def get_all_matches(db: Session, user_id: UUID):
+    check_user(db, user_id)
     
     return db.query(Match).filter(
         or_(
-            Match.host_id == reqBody,
-            Match.guest_id == reqBody
+            Match.host_id == user_id,
+            Match.guest_id == user_id
         )
     ).all()
-    
 
 ####### Helper Function #######
 

@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from fastapi import HTTPException
+from fastapi import HTTPException, Security
 from uuid import UUID
 from app.schemas.match import MatchCreate, MatchStart, MatchEnd, MatchDetails, MatchHistory, MatchResponse, MatchEndResponse
 from fastapi import APIRouter, Depends
@@ -8,6 +8,7 @@ from app.models.match import Match
 import app.services.match as match_service
 from app.dependencies import get_db
 from sqlalchemy.orm import Session
+from app.dependencies import oauth2_scheme
 
 router = APIRouter()
 
@@ -48,9 +49,12 @@ def get_match_details(match_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.get("/history/{user_id}", response_model=list[MatchHistory], tags=["Match"])
-def get_match_history(user_id: UUID, db: Session = Depends(get_db)):
+def get_match_history(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+    token: str = Security(oauth2_scheme)
+):
     matches = match_service.get_all_matches(db=db, user_id=user_id)
     if not matches:
         raise HTTPException(status_code=404, detail="No match history found")
     return matches
-
