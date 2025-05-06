@@ -142,7 +142,7 @@ export function SignUpForm({
 
               <div className="text-center text-sm">
                 Already have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
+                <a href="http://localhost:3000/login" className="underline underline-offset-4">
                   Sign in
                 </a>
               </div>
@@ -151,8 +151,8 @@ export function SignUpForm({
         </CardContent>
       </Card>
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
-        By continuing, you agree to our <a href="#">Terms of Service</a> and{" "}
-        <a href="#">Privacy Policy</a>.
+        By continuing, you agree to our <a href="http://localhost:3000/terms">Terms of Service</a> and{" "}
+        <a href="http://localhost:3000/privacy">Privacy Policy</a>.
       </div>
     </div>
   );
