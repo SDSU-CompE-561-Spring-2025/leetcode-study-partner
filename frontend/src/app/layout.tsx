@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 	title: 'Meet2Code',
 	description: 'A matchmaking platform to solve programming problems together.',
 	icons: {
-		icon: '/meet2code.png',
+		icon: '/favicon.ico',
 	  },
 };
 
