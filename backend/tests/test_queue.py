@@ -49,8 +49,8 @@ def run_user(user_id, langs, categories, role_label):
 user1_id = "6b3af3da-1e7a-4e34-9991-eeed0f14dff7"
 user2_id = "1a9d5cf4-a7b6-4173-b4d4-0b5a929172aa"
 
-thread1 = threading.Thread(target=run_user, args=(user1_id, ["Python"], ["dp"], "user1"))
-thread2 = threading.Thread(target=run_user, args=(user2_id, ["Python"], ["dp"], "user2"))
+thread1 = threading.Thread(target=run_user, args=(user1_id, ["Python"], ["Array", "Hash Table"], "user1"))
+thread2 = threading.Thread(target=run_user, args=(user2_id, ["Python"], ["Array", "Hash Table"], "user2"))
 
 thread1.start()
 time.sleep(1)  # slight stagger for testing
