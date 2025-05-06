@@ -5,6 +5,7 @@ from app.core.database import Base
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.dialects.postgresql import UUID
 
+
 class Match(Base):
     __tablename__ = "match"
 
