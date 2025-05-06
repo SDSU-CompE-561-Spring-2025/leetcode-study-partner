@@ -29,8 +29,8 @@ async def test_full_match_flow_with_connection_cleanup(mock_create_match):
     service = MatchmakingService()
 
     # Create user IDs and queue tickets
-    user1 = uuid4()
-    user2 = uuid4()
+    user1 = "6b3af3da-1e7a-4e34-9991-eeed0f14dff7"
+    user2 = "1a9d5cf4-a7b6-4173-b4d4-0b5a929172aa"
     ticket1 = make_queue_ticket(user_id=user1, languages=[ProgrammingLanguage.python], categories=["dp"])
     ticket2 = make_queue_ticket(user_id=user2, languages=[ProgrammingLanguage.python], categories=["dp"])
 
