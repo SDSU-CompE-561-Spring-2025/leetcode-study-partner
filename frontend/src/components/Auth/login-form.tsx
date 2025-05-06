@@ -83,7 +83,6 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                   type="button"
                   onClick={() => signIn("github", { callbackUrl: "/" })}
                 >
-                  {/* GitHub icon omitted for brevity */}
                   Sign in with GitHub
                 </Button>
                 <Button
@@ -92,7 +91,6 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                   type="button"
                   onClick={() => signIn("google", { callbackUrl: "/" })}
                 >
-                  {/* Google icon omitted for brevity */}
                   Sign in with Google
                 </Button>
               </div>
