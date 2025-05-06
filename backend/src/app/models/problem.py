@@ -11,6 +11,6 @@ class Problem(Base):
     problem_id = Column(Integer, unique=True, index=True)
     problem_link = Column(String(512))
     methods_video_link = Column(String(512))
-    categories = Column(ARRAY(String(32))) 
+    categories = Column(ARRAY(String(64))) 
     
     
