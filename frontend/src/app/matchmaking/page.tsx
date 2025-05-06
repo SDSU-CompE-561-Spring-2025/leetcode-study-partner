@@ -33,7 +33,7 @@ export default function Matchmaking() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [allowUncategorized, setAllowUncategorized] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
-  const [debugMessage, setDebugMessage] = useState<string>("")
+  //const [debugMessage, setDebugMessage] = useState<string>("")
 
   // Fetch categories from API
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function Matchmaking() {
     }
 
     // Log the payload for debugging
-    setDebugMessage(JSON.stringify(payload, null, 2))
+    //setDebugMessage(JSON.stringify(payload, null, 2))
     console.log("Would send WebSocket payload:", payload)
 
     setIsConnecting(true)
@@ -144,6 +144,7 @@ export default function Matchmaking() {
           >
             {isConnecting ? "Connecting..." : "Begin"}
           </Button>
+          {/*
           {debugMessage && (
             <div className="mt-6 w-full">
               <div className="bg-gray-800 rounded-md p-3 overflow-auto max-h-[200px] text-xs font-mono">
@@ -152,6 +153,7 @@ export default function Matchmaking() {
               </div>
             </div>
           )}
+          */}
         </div>
       </Card>
     </div>
