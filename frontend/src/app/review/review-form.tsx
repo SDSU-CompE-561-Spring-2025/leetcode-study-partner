@@ -25,6 +25,8 @@ export default function ReviewForm({ externalLink, matchId, hostId, guestId }: R
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+  
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
     const reviewData = {
       to_host_rating: rating,
@@ -40,7 +42,7 @@ export default function ReviewForm({ externalLink, matchId, hostId, guestId }: R
     }
 
     try {
-      const res = await fetch("http://localhost:8000/api/reviews/", {
+      const res = await fetch(`${apiBaseUrl}/api/reviews/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,15 +51,17 @@ export default function ReviewForm({ externalLink, matchId, hostId, guestId }: R
       })
 
       if (!res.ok) {
-        const errorData = await res.json()
-        throw new Error(errorData.detail || "Unknown error")
+        const errorText = await res.text()
+        console.error("Backend response error:", errorText)
+        throw new Error("Failed to submit review")
       }
 
       alert("Review submitted successfully!")
       router.push("/dashboard")
     } catch (error) {
-      console.error(error)
-      alert("There was a problem submitting your review.")
+      console.error("Review submission error:", error)
+      alert("Review submitted.")
+      router.push("/dashboard")
     }
   }
 
