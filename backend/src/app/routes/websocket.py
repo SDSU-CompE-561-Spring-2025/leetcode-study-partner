@@ -39,7 +39,7 @@ html = """
             var ws;
             function sendConnect(event) {
                 var input = document.getElementById("jwt_token")
-                ws = new WebSocket("wss://localhost:8000/ws/connect?token=" + input.value);
+                ws = new WebSocket("wss://localhost:8000/ws/connect?token=" + encodeURIComponent(input.value));
                 var messages = document.getElementById('messages')
                 var message = document.createElement('li')
                 var content = document.createTextNode("Connected to WebSocket")
@@ -74,12 +74,32 @@ async def websocket_endpoint():
 @router.websocket("/connect")
 async def websocket_connect(websocket: WebSocket, db: Session = Depends(dependency=get_db)):
     token = websocket.query_params.get("token")
-    token_data = decode_access_token(token)
-    user = user_service.get_user_by_username(db, token_data.username)
-    if not user:
-        await websocket.close(code=1008)
+    if not token:
+        await websocket.close(code=1008, reason="Missing authentication token")
         return
-    await websocket.accept()
+        
+    try:
+        token_data = decode_access_token(token)
+    except Exception as e:
+        await websocket.close(code=1008, reason=f"Authentication failed: {str(e)}")
+        return
+        
+    try:
+        user = user_service.get_user_by_username(db, token_data.username)
+        if not user:
+            await websocket.close(code=1008, reason="User not found")
+            return
+    except Exception as e:
+        await websocket.close(code=1008, reason=f"Error retrieving user: {str(e)}")
+        return
+        
+    
+    try:
+        await websocket.accept()
+        print(f"WebSocket accepted for user {user.id}")
+    except Exception as e:
+        print(f"Error accepting WebSocket: {e}")
+        return
     
     # Register the websocket connection
     async with mm.websocket_lock:
@@ -87,7 +107,14 @@ async def websocket_connect(websocket: WebSocket, db: Session = Depends(dependen
     
     try:
         while True:
-            message = await websocket.receive_json()
+            # Wait for messages from the client
+            try:
+                message = await websocket.receive_json()
+                print(f"Received message from user {user.id}: {message}")
+            except Exception as e:
+                print(f"Error receiving message: {e}")
+                break
+                
             event = message.get("event")
             # Handle different events
             if event == "disconnect":
@@ -133,7 +160,6 @@ async def websocket_connect(websocket: WebSocket, db: Session = Depends(dependen
                     user_id=user.id,
                     programming_languages=ticketRequest.programming_languages,
                     categories=ticketRequest.categories,
-                    uncategorized=ticketRequest.uncategorized
                 )
                 print(ticket)
                 async with mm.queue_lock:

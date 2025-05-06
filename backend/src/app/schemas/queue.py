@@ -33,8 +33,7 @@ class Status(str, Enum):
 class QueueTicket(BaseModel):
     user_id: UUID = Field(...)
     programming_languages: List[ProgrammingLanguage]
-    categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$", max_length=32)], min_length=1, max_length=5)
-    uncategorized: bool
+    categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_\-\s\(\)]+$", max_length=32)], min_length=1, max_length=5)
     queued_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     resulting_match_id: UUID | None = None
 
@@ -45,14 +44,12 @@ class QueueTicket(BaseModel):
 
 class QueueTicketCreate(BaseModel):
     programming_languages: List[ProgrammingLanguage]
-    categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$", max_length=32)], min_length=1, max_length=5)
-    uncategorized: bool
-
+    categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_\-\s\(\)]+$", max_length=32)], min_length=1, max_length=5)
 
     # treating this as a catch-all because I don't know what it does 
     model_config = ConfigDict(
         arbitrary_types_allowed=True
     )
-    
+
 
 

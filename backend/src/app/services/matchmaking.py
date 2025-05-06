@@ -48,16 +48,26 @@ async def find_problem_id_from_preferences(categories: list[str], db: Session = 
     # If "None" is in categories, include uncategorized problems
     include_uncategorized = "None" in categories
     filtered_categories = [c for c in categories if c != "None"]
+    
+    # Build query step by step to avoid boolean operation errors
     query = db.query(Problem)
-    if filtered_categories:
+    
+    # Create the appropriate filtering conditions
+    if filtered_categories and include_uncategorized:
+        # Either match one of the categories OR it has no categories
         query = query.filter(
-            (Problem.categories.overlap(filtered_categories)) |
-            (include_uncategorized & (Problem.categories == None))
+            (Problem.categories.overlap(filtered_categories)) | 
+            (Problem.categories == None)
         )
+    elif filtered_categories:
+        # Only match the specified categories
+        query = query.filter(Problem.categories.overlap(filtered_categories))
     elif include_uncategorized:
+        # Only include uncategorized problems
         query = query.filter(Problem.categories == None)
     else:
         return None
+        
     problems = query.all()
     if not problems:
         return None

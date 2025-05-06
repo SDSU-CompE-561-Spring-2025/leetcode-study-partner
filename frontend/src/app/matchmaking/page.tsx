@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card"
 import { CheckboxGroup } from "./checkbox-group"
 import { useState, useEffect, useCallback } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useSession } from "next-auth/react"
+
 //import { PROGRAMMING_LANGUAGES } from "@/lib/utils"
 
 const PROGRAMMING_LANGUAGES = [
@@ -28,6 +30,7 @@ const PROGRAMMING_LANGUAGES = [
 ]
 
 export default function Matchmaking() {
+  const { data: session } = useSession();
   const [categories, setCategories] = useState<string[]>([])
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
@@ -37,7 +40,7 @@ export default function Matchmaking() {
 
   // Fetch categories from API
   useEffect(() => {
-    fetch("http://localhost:8000/api/problem/tags")
+    fetch("https://localhost:8000/api/problem/tags")
       .then((res) => res.json())
       .then((data) => setCategories((data.tags ?? []).sort((a: string, b: string) => a.localeCompare(b))))
       .catch(() => setCategories([]))
@@ -68,15 +71,34 @@ export default function Matchmaking() {
     }
 
     // Log the payload for debugging
-    //setDebugMessage(JSON.stringify(payload, null, 2))
-    console.log("Would send WebSocket payload:", payload)
+    //console.log("Would send WebSocket payload:", payload)
 
     setIsConnecting(true)
 
     // WebSocket connection logic
     try {
-      // Create WebSocket connection
-      const socket = new WebSocket("ws://localhost:8000/ws")
+      // Get the access token from session
+      const token = session?.accessToken;
+      
+      if (!token) {
+        console.error("No access token found in session");
+        console.log("Session data:", session);
+        setIsConnecting(false);
+        return;
+      }
+      
+      console.log("Using token for WebSocket connection:", token);
+      
+      // NOTE: For secure WebSocket connections with self-signed certificates:
+      // 1. Run frontend with NODE_TLS_REJECT_UNAUTHORIZED=0 npm run dev
+      // 2. Make sure backend is running with SSL certificates
+      const protocol = 'wss'; // Use secure WebSockets
+      const host = 'localhost:8000'; // This could come from env config
+      
+      // Create WebSocket connection with token as query param - removed trailing slash
+      const socket = new WebSocket(`${protocol}://${host}/ws/connect?token=${encodeURIComponent(token)}`);
+      
+      //console.log("Attempting WebSocket connection to:", `${protocol}://${host}/ws/connect`);
 
       socket.onopen = () => {
         // Send create_ticket event
@@ -94,15 +116,15 @@ export default function Matchmaking() {
         setIsConnecting(false)
       }
 
-      socket.onclose = () => {
-        console.log("WebSocket connection closed")
+      socket.onclose = (event) => {
+        console.log("WebSocket connection closed", event.code, event.reason)
         setIsConnecting(false)
       }
     } catch (error) {
       console.error("Failed to connect:", error)
       setIsConnecting(false)
     }
-  }, [selectedLanguages, selectedCategories, allowUncategorized, isBeginEnabled])
+  }, [selectedLanguages, selectedCategories, allowUncategorized, isBeginEnabled, session])
 
   return (
     <div className="min-h-screen bg-background text-white flex flex-col items-center p-4">

@@ -39,15 +39,10 @@ app.include_router(api_router, prefix="")
 app.include_router(websocket_router, prefix="/ws", tags=["WebSocket"])
 
 origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
-    "http://localhost",
-    "http://localhost:8080",
-    # Added for Next.js frontend and WebRTC signaling
     "http://localhost:3000",
-    "https://localhost:3000",
-    "ws://localhost:3000",
-    "wss://localhost:3000",
+    "https://localhost:3000", 
+    "http://localhost:8000",
+    "https://localhost:8000",
     "ws://localhost:8000",
     "wss://localhost:8000"
 ]
