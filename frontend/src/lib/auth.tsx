@@ -2,6 +2,8 @@ import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios';
 import { API_HOST_BASE_URL } from '@/lib/constants';
+import GitHubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 
 declare module 'next-auth' {
   interface User {
@@ -69,9 +71,22 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_SECRET_ID!,
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
   ],
-
+  session: {
+    strategy: 'jwt',
+  },
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      return url.startsWith(baseUrl) ? url : baseUrl;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.accessToken = user.accessToken;
@@ -100,7 +115,6 @@ export const authOptions: NextAuthOptions = {
         return { ...token, error: 'RefreshAccessTokenError' };
       }
     },
-
     async session({ session, token }) {
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
@@ -108,18 +122,13 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-
   events: {
     async signOut({ token }) {
       try {
         if (token?.refreshToken) {
-          const formData = new URLSearchParams();
-          formData.append("refresh_token", token.refreshToken);
-  
           await axios.post(`${API_HOST_BASE_URL}auth/logout`, {
             refresh_token: token.refreshToken,
           });
-
           console.log('Tokens revoked successfully');
         }
       } catch (error) {
@@ -127,8 +136,6 @@ export const authOptions: NextAuthOptions = {
       }
     },
   },
-  
-
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: '/login',
