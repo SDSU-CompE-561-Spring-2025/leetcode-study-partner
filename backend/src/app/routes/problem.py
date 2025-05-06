@@ -1,6 +1,6 @@
 from datetime import timedelta
 from app.core.auth import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
-from app.schemas.problem import ProblemCreate
+from app.schemas.problem import ProblemCreate, ProblemResponse
 from app.schemas.token import Token
 from app.schemas.user import UserResponse, UserCreate
 from fastapi import APIRouter, Depends
@@ -14,7 +14,6 @@ from fastapi import HTTPException, status
 
 #from app.schemas.problem import UserReviewCreate, UserReviewRead
 from app.models.problem import Problem as ProblemModel
-from app.schemas.problem import Problem
 from app.models.user import User
 from app.schemas.user_match_history import UserMatchHistory
 
@@ -22,7 +21,7 @@ from app.schemas.user_match_history import UserMatchHistory
 
 router = APIRouter()
 
-@router.post("/create", response_model=Problem)
+@router.post("/create", response_model=ProblemCreate)
 def create_problem(problem: ProblemCreate, db: Session = Depends(get_db)):
     new_problem = problem_service.create_problem(db=db, problem=problem)
     return new_problem
@@ -34,7 +33,7 @@ def get_single_problem(lc_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Problem not found")
     return problem
 
-@router.put("/update/{lc_id}", response_model=Problem)
+@router.put("/update/{lc_id}", response_model=ProblemResponse)
 def update_problem(lc_id: int, problem: ProblemCreate, db: Session = Depends(get_db)):
     result = problem_service.update_problem(db=db, lc_id=lc_id, problem_update=problem)
     return result
