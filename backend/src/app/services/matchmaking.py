@@ -44,15 +44,17 @@ async def find_matchmaking_pairs():
 
         return matched_pairs
 
-async def find_problem_id_from_preferences(allow_uncategorized: bool, categories: list[str], db: Session = None):
-    # Query problems that share at least one category or are uncategorized if allowed
+async def find_problem_id_from_preferences(categories: list[str], db: Session = None):
+    # If "None" is in categories, include uncategorized problems
+    include_uncategorized = "None" in categories
+    filtered_categories = [c for c in categories if c != "None"]
     query = db.query(Problem)
-    if categories:
+    if filtered_categories:
         query = query.filter(
-            (Problem.categories.overlap(categories)) |
-            ((allow_uncategorized) & (Problem.categories == None))
+            (Problem.categories.overlap(filtered_categories)) |
+            (include_uncategorized & (Problem.categories == None))
         )
-    elif allow_uncategorized:
+    elif include_uncategorized:
         query = query.filter(Problem.categories == None)
     else:
         return None
@@ -64,14 +66,20 @@ async def find_problem_id_from_preferences(allow_uncategorized: bool, categories
     scored = []
     for p in problems:
         if p.categories:
-            shared = len(set(p.categories) & set(categories))
+            shared = len(set(p.categories) & set(filtered_categories))
         else:
             shared = 0
         scored.append((p, shared))
     # Sort by shared count descending
     scored.sort(key=lambda x: x[1], reverse=True)
     # Weighted random selection: more weight for higher shared count
-    weights = [max(1, s[1]) for s in scored]
+    weights = []
+    for s in scored:
+        if not s[0].categories:
+            # Uncategorized problems get half weight
+            weights.append(max(1, s[1]) * 0.5)
+        else:
+            weights.append(max(1, s[1]))
     selected = random.choices(scored, weights=weights, k=1)[0][0]
     return selected.problem_id
 
@@ -79,7 +87,10 @@ async def create_matches_from_pairs(pairs: List[Tuple[QueueTicket,QueueTicket]],
     created_match_ids = []
     for pair in pairs:
         shared_categories = list(set(pair[0].categories).intersection(pair[1].categories))
-        problem_id = await find_problem_id_from_preferences(shared_categories, db)
+        problem_id = await find_problem_id_from_preferences(
+            categories=shared_categories,
+            db=db
+        )
         
         match = MatchCreate(
             host_id=pair[0].user_id,

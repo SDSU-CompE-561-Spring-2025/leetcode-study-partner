@@ -133,6 +133,7 @@ async def websocket_connect(websocket: WebSocket, db: Session = Depends(dependen
                     user_id=user.id,
                     programming_languages=ticketRequest.programming_languages,
                     categories=ticketRequest.categories,
+                    uncategorized=ticketRequest.uncategorized
                 )
                 print(ticket)
                 async with mm.queue_lock:
