@@ -48,7 +48,9 @@ export default function ContactPage() {
         <div className="space-y-3">
           <h1 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">Get in Touch</h1>
           <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-            Have a question? Fill out the form below and we'll get back to you as soon as possible.
+            Have a question, forgot your password, or have another issue? 
+            < br/>
+            Fill out the form below and we'll get back to you as soon as possible.
           </p>
         </div>
 
