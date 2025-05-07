@@ -4,6 +4,7 @@ from app.models.token import RefreshToken
 from app.schemas.token import Token, RefreshTokenRequest
 from app.schemas.user import DeleteUserRequest, UserResponse, UserCreate, UserUpdateRequest
 from fastapi import APIRouter, Depends, Security
+from fastapi.responses import JSONResponse
 
 import app.services.user as user_service
 import app.services.user_data as user_data_service
@@ -106,7 +107,10 @@ def delete_user_route(user_id: str, delete_request: DeleteUserRequest, db: Sessi
 def register_oauth_user(user: OAuthUserCreate, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == user.email).first()
     if existing_user:
-        return {"msg": "User already exists"}
+        return JSONResponse(
+            content={"msg": "User already exists"},
+            status_code=200,
+        )
 
     try:
         new_user = User(
