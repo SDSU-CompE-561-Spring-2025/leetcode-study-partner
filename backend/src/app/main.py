@@ -30,7 +30,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(api_router, prefix="")
-app.include_router(websocket_router, prefix="/ws", tags=["WebSocket"])
+#app.include_router(websocket_router, prefix="/ws", tags=["WebSocket"])
 
 # CORS 
 origins = [

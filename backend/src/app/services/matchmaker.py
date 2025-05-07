@@ -97,6 +97,9 @@ class MatchmakingService:
     
     async def notify_match(self, user_id: UUID, match_id: UUID, peer_id: UUID, role: str):
         print(f"[notify_match] Notifying {user_id} with match {match_id}")
+        websocket = None
+        async with self.conn_lock:
+            websocket = self.connections.get(user_id)
 
         if not websocket:
             print(f"[notify_match] No websocket found for {user_id}")
@@ -142,24 +145,6 @@ class MatchmakingService:
             await self.remove_from_queue(host.user_id)
             await self.remove_from_queue(guest.user_id)
 
-    async def execute_matchmaking_cycle(self, db: Session):
-        """Full matchmaking workflow"""
-        pairs = await self.find_pairs()
-        if not pairs:
-            return
-        
-        # Process pairs
-        for pair in pairs:
-            host, guest = pair
-            match_id = await self.create_match(pair, db)
-            
-            # Send notifications
-            await self.notify_match(host.user_id, match_id, guest.user_id, "host")
-            await self.notify_match(guest.user_id, match_id, host.user_id, "guest")
-            
-            # Cleanup
-            await self.remove_from_queue(host.user_id)
-            await self.remove_from_queue(guest.user_id)
 
 # Singleton instance for the service
 matchmaking_service = MatchmakingService()

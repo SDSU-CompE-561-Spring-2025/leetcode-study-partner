@@ -31,13 +31,13 @@ cd backend
 ### 🐘 Start Postgres
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Shutdown docker image
 
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 
 ### 🚀 Start FastAPI

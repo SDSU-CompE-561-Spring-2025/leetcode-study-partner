@@ -29,6 +29,7 @@ class MatchRoom:
                 if uid != sender_id:
                     try:
                         await ws.send_json(message)
+                        print(f"[relay] {sender_id} → {uid}: {message}")
                     except Exception as e:
                         print(f"Relay failed to {uid}: {e}")
 
