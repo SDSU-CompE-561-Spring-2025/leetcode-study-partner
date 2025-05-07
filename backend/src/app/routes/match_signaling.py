@@ -2,7 +2,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
-from app.services.match_signlaing import match_signaling_service
+from app.services.match_signaling import match_signaling_service
 
 router = APIRouter()
 
