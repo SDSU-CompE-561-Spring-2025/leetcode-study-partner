@@ -4,6 +4,8 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from uuid import UUID, uuid4
+from sqlalchemy.orm import joinedload
+from sqlalchemy import or_
 
 from app.core.config import get_settings
 from app.models.match import Match
@@ -31,9 +33,10 @@ def create_match(db: Session, match: MatchCreate):
     db.commit()
     db.refresh(new_match)
     
-    print( {
+    print({
         "message": "Match created successfully",
-        "match_id": new_match_id} )
+        "match_id": new_match_id
+    })
     return new_match
 
 # UPDATE - Start match
@@ -66,20 +69,17 @@ def end_match(db: Session, match_id: UUID, match_data: MatchEnd):
 
 # READ - Get match details
 def get_match_details(db: Session, match_id: UUID):
-    return db.query(Match).filter(Match.match_id == match_id).first()
+    return db.query(Match).filter(Match.match_id == match_id).all()
 
 # READ - Get all matches for a user
-def get_all_matches(db: Session, reqBody: UUID):
-    
-    check_user(db, reqBody)
-    
-    return db.query(Match).filter(
+def get_all_matches(db: Session, user_id: UUID, skip: int = 0, limit: int = 100):
+    check_user(db, user_id)
+    return db.query(Match).options(joinedload(Match.problem)).filter(
         or_(
-            Match.host_id == reqBody,
-            Match.guest_id == reqBody
+            Match.host_id == user_id,
+            Match.guest_id == user_id
         )
-    ).all()
-    
+    ).offset(skip).limit(limit).all()
 
 ####### Helper Function #######
 
@@ -94,7 +94,10 @@ def check_match_id(db: Session, match_id: UUID):
         raise HTTPException(status_code=404, detail="Match not found")
     return
 
-def check_user(db: Session, userID: UUID):
-    if not db.query(User).filter(User.id == userID).first():
+def check_user(db: Session, user_id: UUID):
+    if not db.query(User).filter(User.id == user_id).first():
         raise HTTPException(status_code=404, detail="User not found")
     return
+
+def get_match_by_id(db: Session, match_id: UUID) -> Match | None:
+    return db.query(Match).filter(Match.match_id == match_id).first()

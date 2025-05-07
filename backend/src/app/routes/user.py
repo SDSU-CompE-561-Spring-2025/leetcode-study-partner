@@ -1,13 +1,16 @@
 from datetime import timedelta
 from app.core.auth import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS, oauth2_scheme, create_access_token, create_refresh_token, decode_refresh_token
 from app.models.token import RefreshToken
-from app.schemas.token import Token
+from app.schemas.token import Token, RefreshTokenRequest
 from app.schemas.user import DeleteUserRequest, UserResponse, UserCreate, UserUpdateRequest
 from fastapi import APIRouter, Depends, Security
 
 import app.services.user as user_service
 import app.services.user_data as user_data_service
 import app.services.token as token_service
+from app.schemas.user import OAuthUserCreate
+from app.models.user import User
+from sqlalchemy.exc import IntegrityError
 from app.dependencies import get_db
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -53,8 +56,9 @@ async def login_for_access_token(
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
 @router.post("/refresh")
-def refresh_token(refresh_token: str, db: Session = Depends(get_db)):
-
+def refresh_token(request: RefreshTokenRequest, db: Session = Depends(get_db)):
+    refresh_token = request.refresh_token
+    
     token_in_db = db.query(RefreshToken).filter_by(token=refresh_token).first()
     if not token_in_db:
         raise HTTPException(status_code=401, detail="Invalid refresh token")
@@ -65,7 +69,8 @@ def refresh_token(refresh_token: str, db: Session = Depends(get_db)):
     return {"access_token": new_access_token, "token_type": "bearer"}
 
 @router.post("/logout")
-def logout(refresh_token: str, db: Session = Depends(get_db)):
+def logout(request: RefreshTokenRequest, db: Session = Depends(get_db)):
+    refresh_token = request.refresh_token
     success = token_service.delete_token(db=db, refresh_token=refresh_token)
     if not success:
         raise HTTPException(status_code=401, detail="Invalid refresh token")
@@ -96,6 +101,26 @@ def update_user_route(
 def delete_user_route(user_id: str, delete_request: DeleteUserRequest, db: Session = Depends(get_db)):
     password = delete_request.password
     return user_service.delete_user(db=db, user_id=user_id, password=password)
+
+@router.post("/oauth-register")
+def register_oauth_user(user: OAuthUserCreate, db: Session = Depends(get_db)):
+    existing_user = db.query(User).filter(User.email == user.email).first()
+    if existing_user:
+        return {"msg": "User already exists"}
+
+    try:
+        new_user = User(
+            username=user.username,
+            email=user.email,
+            oauth_provider=user.provider,
+            password_hash=None,
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return {"msg": "OAuth user created", "user_id": new_user.id}
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Failed to create OAuth user")
 
 #TODO if we make this app real, we will need this
 # @router.post("/users/verify-email/{verification_code}")

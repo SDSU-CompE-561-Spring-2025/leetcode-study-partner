@@ -30,7 +30,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "bcrypt>=4.0.1",
+  "bcrypt>=4.1",
   "bandit>=1.8.3",
   "fastapi[all]",
   "hatch>=1.14.0",
@@ -43,6 +43,8 @@ dependencies = [
   "ruff>=0.9.7",
   "sqlalchemy>=2.0.38",
   "websockets>=15.0.1",
+  "pandas>=2.2.3",
+  "pytest>=8.3.5",
 ]
 
 [project.urls]
