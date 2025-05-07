@@ -37,3 +37,12 @@ class UserUpdateRequest(BaseModel):
 
 class DeleteUserRequest(BaseModel):
     password: str
+
+class OAuthUserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    provider: str
+    access_token: Optional[str] = None
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str

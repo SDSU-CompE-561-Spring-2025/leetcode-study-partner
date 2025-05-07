@@ -15,11 +15,13 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
-    password_hash = Column(String)
+    password_hash = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=True)
     verification_code = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    oauth_provider = Column(String, nullable=True)
+    access_token = Column(String, nullable=True)  # ✅ New column for storing OAuth tokens
 
     user_data = relationship("UserData", back_populates="user", cascade="all, delete-orphan")
     reviews_as_host = relationship("Review", foreign_keys="Review.host_id", back_populates="host", cascade="all, delete-orphan")
