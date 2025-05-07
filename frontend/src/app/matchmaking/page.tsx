@@ -61,21 +61,6 @@ export default function Matchmaking() {
   const handleBegin = useCallback(() => {
     if (!isBeginEnabled()) return
 
-    // Create the payload that would be sent
-    const payload = {
-      event: "create_ticket",
-      programming_languages: selectedLanguages,
-      categories: allowUncategorized
-      ? [...selectedCategories, "None"]
-      : selectedCategories,
-    }
-
-    // Log the payload for debugging
-    //console.log("Would send WebSocket payload:", payload)
-
-    setIsConnecting(true)
-
-    // WebSocket connection logic
     try {
       // Get the access token from session
       const token = session?.accessToken;
@@ -86,6 +71,23 @@ export default function Matchmaking() {
         setIsConnecting(false);
         return;
       }
+    // Create the payload that would be sent
+    const init_data = {
+      token, 
+      ticket:{
+      programming_languages: selectedLanguages,
+      categories: allowUncategorized
+      ? [...selectedCategories, "None"]
+      : selectedCategories,
+      }
+    }
+
+    // Log the payload for debugging
+    //console.log("Would send WebSocket payload:", payload)
+
+    setIsConnecting(true)
+
+    // WebSocket connection logic
       
       console.log("Using token for WebSocket connection:", token);
       
@@ -96,14 +98,14 @@ export default function Matchmaking() {
       const host = 'localhost:8000'; // This could come from env config
       
       // Create WebSocket connection with token as query param - removed trailing slash
-      const socket = new WebSocket(`${protocol}://${host}/ws/connect?token=${encodeURIComponent(token)}`);
+      const socket = new WebSocket(`${protocol}://${host}/ws/queue`);
       
       //console.log("Attempting WebSocket connection to:", `${protocol}://${host}/ws/connect`);
 
       socket.onopen = () => {
         // Send create_ticket event
-        socket.send(JSON.stringify(payload))
-        console.log("WebSocket connection established, sent:", payload)
+        socket.send(JSON.stringify(init_data))
+        console.log("WebSocket connection established, sent:", init_data)
       }
 
       socket.onmessage = (event) => {
