@@ -1,6 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel
 from uuid import UUID
+from .problem import Problem
   
 class MatchCreate(BaseModel):
     host_id: UUID
@@ -39,7 +40,7 @@ class MatchHistory(BaseModel):
     guest_id: UUID
     status: bool
     duration: int
-    problem_id: int
+    problem: Problem
     
     class Config:
         from_attributes = True

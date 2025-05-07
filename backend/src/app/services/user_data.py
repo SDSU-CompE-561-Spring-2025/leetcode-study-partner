@@ -91,8 +91,6 @@ def get_match_categories_count(db: Session, user_id: UUID):
 
     return counter
 
-
-
 def get_last_match(db: Session, user_id: UUID):
     last_match = (
         db.query(Match)

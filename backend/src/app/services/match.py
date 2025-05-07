@@ -72,15 +72,14 @@ def get_match_details(db: Session, match_id: UUID):
     return db.query(Match).filter(Match.match_id == match_id).all()
 
 # READ - Get all matches for a user
-def get_all_matches(db: Session, user_id: UUID):
+def get_all_matches(db: Session, user_id: UUID, skip: int = 0, limit: int = 100):
     check_user(db, user_id)
-    
     return db.query(Match).options(joinedload(Match.problem)).filter(
         or_(
             Match.host_id == user_id,
             Match.guest_id == user_id
         )
-    ).all()
+    ).offset(skip).limit(limit).all()
 
 ####### Helper Function #######
 
