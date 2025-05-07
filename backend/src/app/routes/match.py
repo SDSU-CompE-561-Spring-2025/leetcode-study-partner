@@ -48,8 +48,8 @@ def get_match_details(match_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.get("/history/{user_id}", response_model=list[MatchHistory], tags=["Match"])
-def get_match_history(match_id: UUID, db: Session = Depends(get_db)):
-    matches = match_service.get_all_matches(db=db, match_id=match_id)
+def get_match_history(user_id: UUID, db: Session = Depends(get_db)):
+    matches = match_service.get_all_matches(db=db, user_id=user_id)
     if not matches:
         raise HTTPException(status_code=404, detail="No match history found")
     return matches
