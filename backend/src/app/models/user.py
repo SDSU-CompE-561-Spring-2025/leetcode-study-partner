@@ -21,7 +21,7 @@ class User(Base):
     verification_code = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     oauth_provider = Column(String, nullable=True)
-    access_token = Column(String, nullable=True)  # ✅ New column for storing OAuth tokens
+    access_token = Column(String, nullable=True)
 
     user_data = relationship("UserData", back_populates="user", cascade="all, delete-orphan")
     reviews_as_host = relationship("Review", foreign_keys="Review.host_id", back_populates="host", cascade="all, delete-orphan")
