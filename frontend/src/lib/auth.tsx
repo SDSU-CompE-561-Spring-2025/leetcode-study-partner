@@ -94,7 +94,7 @@ export const authOptions: NextAuthOptions = {
                 email: user.email,
                 username: user.name ?? user.email?.split("@")[0],
                 provider: account.provider,
-                access_token: account.access_token, // ✅ send the OAuth token
+                access_token: account.access_token,
               });              
         } catch (err) {
         
@@ -112,7 +112,6 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
 
-    // ✅ REPLACED jwt callback logic
     async jwt({ token, user, account }) {
       if (user && account?.type === "credentials") {
         token.accessToken = user.accessToken;
@@ -120,12 +119,10 @@ export const authOptions: NextAuthOptions = {
         token.expiresAt = Date.now() + (user.expiresIn ?? 0) * 1000;
       }
 
-      // ✅ SKIP refresh logic for OAuth users
       if (account?.type !== "credentials") {
         return token;
       }
 
-      // ✅ Only refresh if expired
       if (token.expiresAt && Date.now() < token.expiresAt) {
         return token;
       }
