@@ -8,6 +8,9 @@ from fastapi import APIRouter, Depends, Security
 import app.services.user as user_service
 import app.services.user_data as user_data_service
 import app.services.token as token_service
+from app.schemas.user import OAuthUserCreate
+from app.models.user import User
+from sqlalchemy.exc import IntegrityError
 from app.dependencies import get_db
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -98,6 +101,26 @@ def update_user_route(
 def delete_user_route(user_id: str, delete_request: DeleteUserRequest, db: Session = Depends(get_db)):
     password = delete_request.password
     return user_service.delete_user(db=db, user_id=user_id, password=password)
+
+@router.post("/oauth-register")
+def register_oauth_user(user: OAuthUserCreate, db: Session = Depends(get_db)):
+    existing_user = db.query(User).filter(User.email == user.email).first()
+    if existing_user:
+        return {"msg": "User already exists"}
+
+    try:
+        new_user = User(
+            username=user.username,
+            email=user.email,
+            oauth_provider=user.provider,
+            password_hash=None,
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return {"msg": "OAuth user created", "user_id": new_user.id}
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Failed to create OAuth user")
 
 #TODO if we make this app real, we will need this
 # @router.post("/users/verify-email/{verification_code}")
