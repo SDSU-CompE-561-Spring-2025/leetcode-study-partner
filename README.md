@@ -76,7 +76,7 @@ npm install
 ### 🧪 Start development server
 
 ```bash
-npm run dev
+NODE_TLS_REJECT_UNAUTHORIZED=0 npm run dev
 ```
 
 ---
