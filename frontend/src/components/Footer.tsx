@@ -19,12 +19,11 @@ export default function Footer() {
 					</Link>
 				</div>
 
-				<div className="flex space-x-4 text-sm">
-					<Link href="/about" className="hover:underline">About</Link>
-					<Link href="/about/contact" className="hover:underline">Contact</Link>
-					<Link href="/terms" className="hover:underline">Terms</Link>
-					<Link href="/privacy" className="hover:underline">Privacy</Link>
-				</div>
+                <div className="flex space-x-4 text-sm md:absolute md:left-1/2 md:-translate-x-1/2">
+                    <Link href="/about/contact" className="hover:underline">Contact</Link>
+                    <Link href="/terms" className="hover:underline">Terms</Link>
+                    <Link href="/privacy" className="hover:underline">Privacy</Link>
+                </div>
 
 				<div className="text-sm text-muted-foreground text-center md:text-right">
 					<p>&copy; 2025 Meet2Code. All rights reserved.</p>

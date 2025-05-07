@@ -18,7 +18,7 @@ def create_user(db: Session, user: UserCreate):
     verification_code = "1234" #TODO: Implement verification code
 
     db_user = User(
-        id=str(uuid4()),
+        id=uuid4(),
         username=user.username,
         email= user.email,
         password_hash=hashed_password,
