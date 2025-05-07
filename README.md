@@ -44,7 +44,8 @@ docker compose down -v
 
 ```bash
 hatch shell
-hatch run dev
+hatch run dev_webrtc <- if u want video call to work needs https
+hatch run dev <- if you dont care
 ```
 
 ### 🔒 Start FastAPI with HTTPS
