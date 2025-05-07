@@ -39,6 +39,7 @@ class MatchHistory(BaseModel):
     guest_id: UUID
     status: bool
     duration: int
+    problem_id: int
     
     class Config:
         from_attributes = True

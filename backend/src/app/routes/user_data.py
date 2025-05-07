@@ -30,14 +30,14 @@ def get_user_data_endpoint(user_id: UUID, db: Session = Depends(get_db)):
     user_data = user_data_service.get_user_data(db=db, user_id=user_id)
     return user_data
 
-@router.get("/users/{user_id}/match-categories", response_model=dict[str, int])
+@router.get("/users/{user_id}/match-categories-count", response_model=dict[str, int])
 def get_match_categories(
     user_id: UUID,
     db: Session = Depends(get_db),
     token: str = Security(oauth2_scheme)
 ):
     print(f"Fetching match categories for user_id: {user_id}")
-    categories = user_data_service.get_match_categories(db=db, user_id=user_id)
+    categories = user_data_service.get_match_categories_count(db=db, user_id=user_id)
     print(f"Match categories response: {categories}")
     return categories
 

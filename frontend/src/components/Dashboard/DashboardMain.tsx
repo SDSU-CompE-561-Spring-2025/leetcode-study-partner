@@ -14,7 +14,7 @@ import { API_HOST_BASE_URL } from "@/lib/constants";
 export default function DashboardMain() {
   const { data: session, status } = useSession();
   const [userId, setUserId] = useState<string | null>(null);
-  const [userFetchError, setUserFetchError] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchUserId() {
@@ -27,22 +27,20 @@ export default function DashboardMain() {
           });
           console.log("User data:", response.data);
           setUserId(response.data.id);
+          setUsername(response.data.username);
         } catch (error: any) {
           console.error("Failed to fetch user ID:", error.response?.status, error.response?.data);
-          setUserFetchError("Failed to fetch user information. Please try again.");
         }
       }
     }
     fetchUserId();
   }, [session?.accessToken]);
 
-  // Use dashboard data hook only when userId is available
-  const { streak, categories, matchHistory, loading, error } = useDashboardData(
+  const { streak, categories, matchHistory, loading } = useDashboardData(
     userId || "",
     session?.accessToken || ""
   );
 
-  // Handle authentication and loading states
   if (status === "loading") {
     return <p className="text-white text-center mt-10">Loading...</p>;
   }
@@ -55,44 +53,30 @@ export default function DashboardMain() {
     );
   }
 
-  if (userFetchError) {
-    return (
-      <p className="text-red-500 text-center mt-10">{userFetchError}</p>
-    );
-  }
-
   if (loading) {
     return (
       <p className="text-white text-center mt-10">Loading dashboard...</p>
     );
   }
 
-  if (error) {
-    return <p className="text-red-500 text-center mt-10">{error}</p>;
-  }
-
   return (
     <div className="min-h-screen bg-[#1E2328] text-white">
       <main className="container mx-auto p-6">
-        {/* Welcome Header */}
         <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-center md:text-left">
-          Welcome, <span className="text-orange-400">User</span>
+          Welcome, <span className="text-orange-400">{username || 'User'}</span>
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Left side: Streak and CategoryChart */}
           <div className="flex flex-col gap-6 md:col-span-2">
-            <Streak streak={streak} />
+            <Streak streak={streak ?? 0} />
             <CategoryChart categories={categories} />
           </div>
 
-          {/* Right side: Match History */}
           <div className="flex flex-col gap-6">
             <MatchHistory matchHistory={matchHistory} />
           </div>
         </div>
 
-        {/* Find Match Button (centered) */}
         <div className="flex justify-center mt-20">
           <Link href="/matchmaking">
             <Button

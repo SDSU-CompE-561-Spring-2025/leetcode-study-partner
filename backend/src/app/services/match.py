@@ -4,6 +4,8 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from uuid import UUID, uuid4
+from sqlalchemy.orm import joinedload
+from sqlalchemy import or_
 
 from app.core.config import get_settings
 from app.models.match import Match
@@ -67,13 +69,13 @@ def end_match(db: Session, match_id: UUID, match_data: MatchEnd):
 
 # READ - Get match details
 def get_match_details(db: Session, match_id: UUID):
-    return db.query(Match).filter(Match.match_id == match_id).first()
+    return db.query(Match).filter(Match.match_id == match_id).all()
 
 # READ - Get all matches for a user
 def get_all_matches(db: Session, user_id: UUID):
     check_user(db, user_id)
     
-    return db.query(Match).filter(
+    return db.query(Match).options(joinedload(Match.problem)).filter(
         or_(
             Match.host_id == user_id,
             Match.guest_id == user_id
