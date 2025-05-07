@@ -47,13 +47,51 @@ router = APIRouter()
 #         await room.disconnect(match_id)
 #         await match_signaling_service.cleanup_room(match_id)
 
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from typing import Dict, List
+
+router = APIRouter()
+
+# This holds connected peers: match_id -> list of WebSocket connections
+rooms: Dict[str, List[WebSocket]] = {}
+
 @router.websocket("/match/{match_id}")
-async def queue_websocket(websocket: WebSocket, db: Session = Depends(dependency=get_db)):
+async def match_signaling(websocket: WebSocket, match_id: str):
     await websocket.accept()
+    print(f"✅ WebSocket connected: match_id={match_id}")
+
+    if match_id not in rooms:
+        rooms[match_id] = []
+
+    room = rooms[match_id]
+
+    # If already full, reject connection
+    if len(room) >= 2:
+        await websocket.send_json({ "event": "room_full" })
+        await websocket.close()
+        print(f"❌ Room {match_id} full, rejected")
+        return
+
+    # Add this peer
+    room.append(websocket)
+
     try:
+        # If two peers are connected, notify them both
+        if len(room) == 2:
+            for peer in room:
+                await peer.send_json({ "event": "room_ready" })
 
         while True:
-            await websocket.receive_text()
-    except (WebSocketDisconnect, Exception) as e:
-        if not isinstance(e, WebSocketDisconnect):
-            await websocket.close(code=1008, reason=f"Error: {str(e)}")
+            data = await websocket.receive_json()
+            print(f"📩 Received from {match_id}: {data}")
+
+            # Relay message to the other peer
+            for peer in room:
+                if peer != websocket:
+                    await peer.send_json(data)
+
+    except WebSocketDisconnect:
+        print(f"🔌 WebSocket disconnected: match_id={match_id}")
+        room.remove(websocket)
+        if not room:
+            del rooms[match_id]
