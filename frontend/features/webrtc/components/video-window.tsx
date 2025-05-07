@@ -26,7 +26,8 @@ export default function VideoWindow({ matchId, peerId, role }: { matchId: string
   const [statusMessage, setStatusMessage] = useState("Waiting for peer to connect...")
   const [peerLeft, setPeerLeft] = useState(false)
 
-  // LeetCode problem state
+  // LeetCode problem state 
+  // TODO: crud pull for a random problem with matching category
   const [problem] = useState<LeetCodeProblem>({
     id: "LC-704",
     title: "Binary Search",
