@@ -6,6 +6,7 @@ import { CheckboxGroup } from "./checkbox-group"
 import { useState, useEffect, useCallback } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 //import { PROGRAMMING_LANGUAGES } from "@/lib/utils"
 
@@ -37,6 +38,8 @@ export default function Matchmaking() {
   const [allowUncategorized, setAllowUncategorized] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
   //const [debugMessage, setDebugMessage] = useState<string>("")
+
+  const router = useRouter();
 
   // Fetch categories from API
   useEffect(() => {
@@ -110,7 +113,16 @@ export default function Matchmaking() {
 
       socket.onmessage = (event) => {
         console.log("Message from server:", event.data)
-        // Handle server response here
+        const message = JSON.parse(event.data)
+
+        if (message.event === "match_found") {
+          socket.close();
+
+          //pass info to videochat page for webrtc connection
+          //this is scuffed but i dont wanna mess with states rn sorry!!
+          router.push(`/videochat?match_id=${message.match_id}&peer_id=${message.peer_id}&role=${message.role}&signaling_url=${message.signaling_url}`);
+
+        }
       }
 
       socket.onerror = (error) => {

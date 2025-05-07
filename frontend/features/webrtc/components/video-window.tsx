@@ -13,7 +13,16 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 
-export default function VideoWindow() {
+
+type VideoWindowProps = {
+  matchId: string;
+  peerId: string;
+  role: string;
+  signalingUrl: string;
+};
+
+export default function VideoWindow({ matchId, peerId, role, signalingUrl }: VideoWindowProps) {
+
   const [message, setMessage] = useState("")
   const [messages, setMessages] = useState<{ text: string; sender: "me" | "peer" }[]>([])
   const [problemCompleted, setProblemCompleted] = useState(false)
