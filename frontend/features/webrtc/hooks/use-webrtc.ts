@@ -1,17 +1,7 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useSignaling } from "./use-signaling"
-
-interface UseWebRTCReturn {
-  peerConnection: RTCPeerConnection | null
-  connectionState: RTCPeerConnectionState | "none"
-  createOffer: () => Promise<RTCSessionDescriptionInit>
-  createAnswer: (offer: RTCSessionDescriptionInit) => Promise<RTCSessionDescriptionInit>
-  setRemoteDescription: (description: RTCSessionDescriptionInit) => Promise<void>
-  addIceCandidate: (candidate: RTCIceCandidateInit) => Promise<void>
-  remoteStream: MediaStream | null
-}
 
 interface SignalingProps {
   matchId: string
@@ -19,17 +9,18 @@ interface SignalingProps {
   role: string
 }
 
-export function useWebRTC(localStream: MediaStream | null, signalingProps: SignalingProps): UseWebRTCReturn {
+export function useWebRTC(localStream: MediaStream | null, signalingProps: SignalingProps) {
   const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null)
   const [connectionState, setConnectionState] = useState<RTCPeerConnectionState | "none">("none")
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
 
   const remoteStreamRef = useRef<MediaStream | null>(null)
   const pcRef = useRef<RTCPeerConnection | null>(null)
+  const startedRef = useRef(false)
 
   // Initialize WebRTC peer connection
-  useEffect(() => {
-    if (typeof window === "undefined" || !localStream) return
+  const initPeerConnection = useCallback(() => {
+    if (typeof window === "undefined" || !localStream) return null
 
     const iceServers = {
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }, { urls: "stun:stun1.l.google.com:19302" }],
@@ -75,14 +66,69 @@ export function useWebRTC(localStream: MediaStream | null, signalingProps: Signa
     setPeerConnection(pc)
     setConnectionState(pc.connectionState)
 
-    return () => {
-      console.log("Cleaning up WebRTC connection")
-      pc.close()
-      remoteStreamRef.current?.getTracks().forEach((track) => track.stop())
-      remoteStreamRef.current = null
-      pcRef.current = null
-    }
+    return pc
   }, [localStream])
+
+  // Start connection (only once)
+  const startConnection = useCallback(() => {
+    if (startedRef.current) return
+    const pc = initPeerConnection()
+    if (!pc) return
+    startedRef.current = true
+  }, [initPeerConnection])
+
+  // Automatically start the connection once localStream is available
+  useEffect(() => {
+    if (localStream && !startedRef.current) {
+      startConnection()
+    }
+  }, [localStream, startConnection])
+
+  // Toggle audio
+  const toggleAudio = useCallback(() => {
+    if (!localStream) return
+
+    const audioTracks = localStream.getAudioTracks()
+    audioTracks.forEach((track) => {
+      track.enabled = !track.enabled
+    })
+  }, [localStream])
+
+  // Toggle video
+  const toggleVideo = useCallback(() => {
+    if (!localStream) return
+
+    const videoTracks = localStream.getVideoTracks()
+    videoTracks.forEach((track) => {
+      track.enabled = !track.enabled
+    })
+  }, [localStream])
+
+  // Hang up
+  const hangUp = useCallback(() => {
+    if (pcRef.current) {
+      pcRef.current.close()
+    }
+
+    if (remoteStreamRef.current) {
+      remoteStreamRef.current.getTracks().forEach((track) => track.stop())
+    }
+
+    window.location.href = "/matchmaking"
+  }, [])
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (pcRef.current) {
+        pcRef.current.close()
+      }
+
+      if (remoteStreamRef.current) {
+        remoteStreamRef.current.getTracks().forEach((track) => track.stop())
+      }
+    }
+  }, [])
 
   // Update tracks when local stream changes
   useEffect(() => {
@@ -106,6 +152,7 @@ export function useWebRTC(localStream: MediaStream | null, signalingProps: Signa
     })
   }, [peerConnection, localStream])
 
+  // WebRTC signaling functions
   const createOffer = async (): Promise<RTCSessionDescriptionInit> => {
     if (!peerConnection) throw new Error("Peer connection not initialized")
 
@@ -141,23 +188,13 @@ export function useWebRTC(localStream: MediaStream | null, signalingProps: Signa
     await peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
   }
 
-  // Initialize signaling
-  useSignaling({
-    ...signalingProps,
-    peerConnection,
-    createOffer,
-    createAnswer,
-    setRemoteDescription,
-    addIceCandidate,
-  })
-
   return {
     peerConnection,
     connectionState,
-    createOffer,
-    createAnswer,
-    setRemoteDescription,
-    addIceCandidate,
     remoteStream,
+    startConnection,
+    toggleAudio,
+    toggleVideo,
+    hangUp,
   }
 }

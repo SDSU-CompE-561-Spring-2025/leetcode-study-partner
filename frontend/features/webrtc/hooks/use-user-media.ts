@@ -2,30 +2,16 @@
 
 import { useState, useEffect, useCallback } from "react"
 
-interface DeviceInfo {
-  audioinput: MediaDeviceInfo[]
-  videoinput: MediaDeviceInfo[]
-  audiooutput: MediaDeviceInfo[]
-}
-
-interface UserMediaHook {
-  stream: MediaStream | null
-  error: Error | null
-  availableDevices: DeviceInfo
-  currentDevices: {
-    audioinput?: string
-    videoinput?: string
-    audiooutput?: string
-  }
-  switchDevice: (kind: "audioinput" | "videoinput" | "audiooutput", deviceId: string) => void
-}
-
-export function useUserMedia(): UserMediaHook {
+export function useUserMedia() {
   const [stream, setStream] = useState<MediaStream | null>(null)
   const [error, setError] = useState<Error | null>(null)
-  const [availableDevices, setAvailableDevices] = useState<DeviceInfo>({
-    audioinput: [],
+  const [availableDevices, setAvailableDevices] = useState<{
+    videoinput: MediaDeviceInfo[]
+    audioinput: MediaDeviceInfo[]
+    audiooutput: MediaDeviceInfo[]
+  }>({
     videoinput: [],
+    audioinput: [],
     audiooutput: [],
   })
   const [currentDevices, setCurrentDevices] = useState<{
@@ -53,50 +39,81 @@ export function useUserMedia(): UserMediaHook {
     }
   }, [])
 
-  // Initialize media stream
-  const getMedia = useCallback(async () => {
-    if (typeof navigator === "undefined" || !navigator.mediaDevices) return
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true,
-      })
-
-      setStream(stream)
-      setError(null)
-
-      // Update device list after getting stream
-      await updateAvailableDevices()
-
-      // Set current devices based on active tracks
-      setCurrentDevices({
-        audioinput: stream.getAudioTracks()[0]?.getSettings().deviceId,
-        videoinput: stream.getVideoTracks()[0]?.getSettings().deviceId,
-      })
-    } catch (err) {
-      console.warn("Video+Audio failed, trying audio only...", err)
-
+  // Initialize device list
+  useEffect(() => {
+    const initDevices = async () => {
       try {
-        const audioOnlyStream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-          video: false,
-        })
+        // First request permissions to get labeled devices
+        await navigator.mediaDevices
+          .getUserMedia({ audio: true, video: true })
+          .then((tempStream) => {
+            // Stop the temporary stream immediately
+            tempStream.getTracks().forEach((track) => track.stop())
+          })
+          .catch((err) => {
+            console.error("Error getting initial permissions:", err)
+          })
 
-        setStream(audioOnlyStream)
-        setError(null)
-
+        // Now enumerate devices
         await updateAvailableDevices()
+      } catch (err) {
+        console.error("Error initializing devices:", err)
+      }
+    }
 
-        setCurrentDevices({
-          audioinput: audioOnlyStream.getAudioTracks()[0]?.getSettings().deviceId,
-        })
-      } catch (fallbackErr) {
-        setError(fallbackErr as Error)
-        console.error("Failed to get any media devices:", fallbackErr)
+    initDevices()
+
+    // Listen for device changes
+    if (typeof navigator !== "undefined" && navigator.mediaDevices) {
+      navigator.mediaDevices.addEventListener("devicechange", updateAvailableDevices)
+    }
+
+    return () => {
+      if (typeof navigator !== "undefined" && navigator.mediaDevices) {
+        navigator.mediaDevices.removeEventListener("devicechange", updateAvailableDevices)
       }
     }
   }, [updateAvailableDevices])
+
+  // Get stream with specific devices
+  const getStreamWithDevices = useCallback(
+    async (videoDeviceId?: string, audioDeviceId?: string) => {
+      if (typeof navigator === "undefined" || !navigator.mediaDevices) return null
+
+      try {
+        // Stop any existing tracks
+        if (stream) {
+          stream.getTracks().forEach((track) => track.stop())
+        }
+
+        // Build constraints based on selected devices
+        const constraints: MediaStreamConstraints = {
+          video: videoDeviceId ? { deviceId: { exact: videoDeviceId } } : true,
+          audio: audioDeviceId ? { deviceId: { exact: audioDeviceId } } : true,
+        }
+
+        console.log("Getting user media with constraints:", constraints)
+
+        // Get the stream with selected devices
+        const newStream = await navigator.mediaDevices.getUserMedia(constraints)
+        setStream(newStream)
+        setError(null)
+
+        // Update current devices
+        setCurrentDevices({
+          videoinput: newStream.getVideoTracks()[0]?.getSettings().deviceId,
+          audioinput: newStream.getAudioTracks()[0]?.getSettings().deviceId,
+        })
+
+        return newStream
+      } catch (err) {
+        console.error("Error getting user media:", err)
+        setError(err as Error)
+        return null
+      }
+    },
+    [stream],
+  )
 
   // Switch to a different media device
   const switchDevice = useCallback(
@@ -177,26 +194,14 @@ export function useUserMedia(): UserMediaHook {
     [stream],
   )
 
-  // Initialize on mount
+  // Clean up on unmount
   useEffect(() => {
-    if (typeof navigator === "undefined" || !navigator.mediaDevices) return
-
-    // Listen for device changes
-    navigator.mediaDevices.addEventListener("devicechange", updateAvailableDevices)
-
-    // Get initial media stream
-    getMedia()
-
     return () => {
-      // Clean up
-      navigator.mediaDevices.removeEventListener("devicechange", updateAvailableDevices)
-
-      // Stop all tracks
       if (stream) {
         stream.getTracks().forEach((track) => track.stop())
       }
     }
-  }, [getMedia, updateAvailableDevices])
+  }, [stream])
 
   return {
     stream,
@@ -204,5 +209,6 @@ export function useUserMedia(): UserMediaHook {
     availableDevices,
     currentDevices,
     switchDevice,
+    getStreamWithDevices,
   }
 }

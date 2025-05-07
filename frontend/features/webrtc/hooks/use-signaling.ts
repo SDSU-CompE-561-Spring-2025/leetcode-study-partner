@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react"
 
 interface UseSignalingProps {
+  enabled: boolean
   matchId: string
   peerId: string
   role: string
@@ -14,6 +15,7 @@ interface UseSignalingProps {
 }
 
 export function useSignaling({
+  enabled,
   matchId,
   peerId,
   role,
@@ -26,12 +28,9 @@ export function useSignaling({
   const socketRef = useRef<WebSocket | null>(null)
 
   useEffect(() => {
-    if (!matchId || !peerId || !peerConnection) return
+    if (!enabled || !matchId || !peerId || !peerConnection) return
 
-    const protocol = "wss"
-    const normalizedMatchId = matchId
-    const socketUrl = `${protocol}://localhost:8000/ws/signaling/match/${normalizedMatchId}`
-
+    const socketUrl = `wss://localhost:8000/ws/signaling/match/${matchId}`
     console.log("📡 Connecting to signaling server:", socketUrl)
 
     const socket = new WebSocket(socketUrl)
@@ -39,13 +38,11 @@ export function useSignaling({
 
     socket.onopen = () => {
       console.log("✅ WebSocket signaling connected")
-
-      // Send a ready message to the signaling server
       socket.send(
         JSON.stringify({
           event: "client_ready",
-          peerId: peerId,
-          role: role,
+          peerId,
+          role,
         }),
       )
     }
@@ -80,19 +77,18 @@ export function useSignaling({
           await addIceCandidate(data.candidate)
         }
       } catch (err) {
-        console.error("Failed to process signaling message:", err)
+        console.error("❌ Failed to process signaling message:", err)
       }
     }
 
     socket.onerror = (err) => {
-      console.error("❌ WebSocket error:", err)
+      console.warn("⚠️ WebSocket error (non-blocking):", err)
     }
 
     socket.onclose = () => {
       console.log("🔌 WebSocket closed")
     }
 
-    // Send ICE candidates to the signaling server
     peerConnection.onicecandidate = (event) => {
       if (event.candidate && socketRef.current?.readyState === WebSocket.OPEN) {
         socketRef.current.send(
@@ -108,5 +104,15 @@ export function useSignaling({
       socket.close()
       socketRef.current = null
     }
-  }, [matchId, peerId, role, peerConnection])
+  }, [
+    enabled,
+    matchId,
+    peerId,
+    role,
+    peerConnection,
+    createOffer,
+    createAnswer,
+    setRemoteDescription,
+    addIceCandidate,
+  ])
 }
