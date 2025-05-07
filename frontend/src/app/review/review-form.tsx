@@ -35,14 +35,16 @@ export default function ReviewForm({ externalLink, matchId, hostId, guestId }: R
       to_guest_comment: description,
       problem_solved: true,
       time_given: 3600,
-      elapsed_time: "01:00:00",
+      elapsed_time: 3600,
       match_id: matchId,
       host_id: hostId,
       guest_id: guestId,
     }
 
     try {
+      console.log("📡 Fetching from:", `${apiBaseUrl}/api/reviews/`)
       const res = await fetch(`${apiBaseUrl}/api/reviews/`, {
+        
         method: "POST",
         headers: {
           "Content-Type": "application/json",
