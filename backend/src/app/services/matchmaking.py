@@ -8,6 +8,8 @@ import asyncio
 
 from fastapi import Depends, WebSocket
 from starlette.websockets import WebSocketDisconnect
+from app.models.problem import Problem
+import random
 
 # global matchmaking queue
 queue: dict[UUID, QueueTicket] = {}
@@ -42,17 +44,63 @@ async def find_matchmaking_pairs():
 
         return matched_pairs
 
-async def find_problem_id_from_preferences(categories: List[str], db: Session = None):
-    # Placeholder function to find a problem ID based on user preferences
-    # This should be replaced with actual logic to find a problem ID from the database
-    # For now, return a simple value
-    return 1
+async def find_problem_id_from_preferences(categories: list[str], db: Session = None):
+    # If "None" is in categories, include uncategorized problems
+    include_uncategorized = "None" in categories
+    filtered_categories = [c for c in categories if c != "None"]
+    
+    # Build query step by step to avoid boolean operation errors
+    query = db.query(Problem)
+    
+    # Create the appropriate filtering conditions
+    if filtered_categories and include_uncategorized:
+        # Either match one of the categories OR it has no categories
+        query = query.filter(
+            (Problem.categories.overlap(filtered_categories)) | 
+            (Problem.categories == None)
+        )
+    elif filtered_categories:
+        # Only match the specified categories
+        query = query.filter(Problem.categories.overlap(filtered_categories))
+    elif include_uncategorized:
+        # Only include uncategorized problems
+        query = query.filter(Problem.categories == None)
+    else:
+        return None
+        
+    problems = query.all()
+    if not problems:
+        return None
+
+    # Score problems by number of shared categories
+    scored = []
+    for p in problems:
+        if p.categories:
+            shared = len(set(p.categories) & set(filtered_categories))
+        else:
+            shared = 0
+        scored.append((p, shared))
+    # Sort by shared count descending
+    scored.sort(key=lambda x: x[1], reverse=True)
+    # Weighted random selection: more weight for higher shared count
+    weights = []
+    for s in scored:
+        if not s[0].categories:
+            # Uncategorized problems get half weight
+            weights.append(max(1, s[1]) * 0.5)
+        else:
+            weights.append(max(1, s[1]))
+    selected = random.choices(scored, weights=weights, k=1)[0][0]
+    return selected.problem_id
 
 async def create_matches_from_pairs(pairs: List[Tuple[QueueTicket,QueueTicket]], db: Session):
     created_match_ids = []
     for pair in pairs:
         shared_categories = list(set(pair[0].categories).intersection(pair[1].categories))
-        problem_id = await find_problem_id_from_preferences(shared_categories, db)
+        problem_id = await find_problem_id_from_preferences(
+            categories=shared_categories,
+            db=db
+        )
         
         match = MatchCreate(
             host_id=pair[0].user_id,
