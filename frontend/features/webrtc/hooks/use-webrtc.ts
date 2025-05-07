@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useSignaling } from "./use-signaling";
 
 interface UseWebRTCReturn {
   peerConnection: RTCPeerConnection | null;
@@ -12,17 +13,20 @@ interface UseWebRTCReturn {
   remoteStream: MediaStream | null;
 }
 
-export function useWebRTC(localStream: MediaStream | null): UseWebRTCReturn {
+interface SignalingProps {
+  matchId: string;
+  peerId: string;
+  role: string;
+}
+
+export function useWebRTC(localStream: MediaStream | null, signalingProps: SignalingProps): UseWebRTCReturn {
   const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
   const [connectionState, setConnectionState] = useState<RTCPeerConnectionState | "none">("none");
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 
-  // Initialize remoteStreamRef safely (only on client)
   const remoteStreamRef = useRef<MediaStream | null>(null);
 
-  // Initialize peer connection (runs only on client)
   useEffect(() => {
-    // Skip if not in browser
     if (typeof window === "undefined") return;
 
     const iceServers = {
@@ -33,11 +37,8 @@ export function useWebRTC(localStream: MediaStream | null): UseWebRTCReturn {
     };
 
     const pc = new RTCPeerConnection(iceServers);
-
-    // Initialize remote stream ref
     remoteStreamRef.current = new MediaStream();
 
-    // Set up event listeners
     pc.onicecandidate = (event) => {
       if (event.candidate) {
         console.log("New ICE candidate:", event.candidate);
@@ -66,23 +67,17 @@ export function useWebRTC(localStream: MediaStream | null): UseWebRTCReturn {
     };
   }, []);
 
-  // Add local tracks to peer connection (only if peerConnection and localStream exist)
   useEffect(() => {
     if (!peerConnection || !localStream) return;
 
-    // Remove existing senders
     const senders = peerConnection.getSenders();
-    senders.forEach((sender) => {
-      peerConnection.removeTrack(sender);
-    });
+    senders.forEach((sender) => peerConnection.removeTrack(sender));
 
-    // Add new tracks
     localStream.getTracks().forEach((track) => {
       peerConnection.addTrack(track, localStream);
     });
   }, [peerConnection, localStream]);
 
-  // Create an offer
   const createOffer = async (): Promise<RTCSessionDescriptionInit> => {
     if (!peerConnection) throw new Error("Peer connection not initialized");
     const offer = await peerConnection.createOffer();
@@ -90,7 +85,6 @@ export function useWebRTC(localStream: MediaStream | null): UseWebRTCReturn {
     return offer;
   };
 
-  // Create an answer
   const createAnswer = async (offer: RTCSessionDescriptionInit): Promise<RTCSessionDescriptionInit> => {
     if (!peerConnection) throw new Error("Peer connection not initialized");
     await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
@@ -99,17 +93,24 @@ export function useWebRTC(localStream: MediaStream | null): UseWebRTCReturn {
     return answer;
   };
 
-  // Set remote description
   const setRemoteDescription = async (description: RTCSessionDescriptionInit): Promise<void> => {
     if (!peerConnection) throw new Error("Peer connection not initialized");
     await peerConnection.setRemoteDescription(new RTCSessionDescription(description));
   };
 
-  // Add ICE candidate
   const addIceCandidate = async (candidate: RTCIceCandidateInit): Promise<void> => {
     if (!peerConnection) throw new Error("Peer connection not initialized");
     await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
   };
+
+  useSignaling({
+    ...signalingProps,
+    peerConnection,
+    createOffer,
+    createAnswer,
+    setRemoteDescription,
+    addIceCandidate,
+  });
 
   return {
     peerConnection,

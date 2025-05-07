@@ -18,10 +18,9 @@ type VideoWindowProps = {
   matchId: string;
   peerId: string;
   role: string;
-  signalingUrl: string;
 };
 
-export default function VideoWindow({ matchId, peerId, role, signalingUrl }: VideoWindowProps) {
+export default function VideoWindow({ matchId, peerId, role }: VideoWindowProps) {
 
   const [message, setMessage] = useState("")
   const [messages, setMessages] = useState<{ text: string; sender: "me" | "peer" }[]>([])
@@ -39,12 +38,12 @@ export default function VideoWindow({ matchId, peerId, role, signalingUrl }: Vid
   const {
     peerConnection,
     connectionState,
-    createOffer,
-    createAnswer,
-    setRemoteDescription,
-    addIceCandidate,
     remoteStream,
-  } = useWebRTC(localStream)
+  } = useWebRTC(localStream, {
+    matchId,
+    peerId,
+    role,
+  });
 
   // Connect streams to video elements
   const localVideoRef = useMediaStream(localStream)

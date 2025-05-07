@@ -35,7 +35,7 @@ app.include_router(api_router, prefix="")
 # CORS 
 origins = [
     "http://localhost:3000",
-    "https://localhost:3000", 
+    "https://localhost:3443", #reverse proxy 
     "http://localhost:8000",
     "https://localhost:8000",
     "ws://localhost:8000",
