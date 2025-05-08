@@ -40,12 +40,19 @@ docker compose up -d
 docker compose down -v
 ```
 
+### Populate problems table from CSV
+```bash
+docker-compose down -v
+docker-compose up
+hatch run dev  # Run to initialize database (hatch run dev), then close it after running scripts
+python -m src.app.scripts.load_problems # or hatch run python -m src.app.scripts.load_problems
+```
+
 ### 🚀 Start FastAPI
 
 ```bash
-hatch shell
-hatch run dev_webrtc <- if u want video call to work needs https
-hatch run dev <- if you dont care
+hatch shell 
+hatch run dev
 ```
 
 ### 🔒 Start FastAPI with HTTPS
@@ -77,7 +84,7 @@ npm install
 ### 🧪 Start development server
 
 ```bash
-NODE_TLS_REJECT_UNAUTHORIZED=0 npm run dev
+npm run dev
 ```
 
 ---
