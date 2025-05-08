@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 services:
   db:
     image: postgres
@@ -85,40 +84,3 @@ networks:
 
 volumes:
   postgres_data:
-=======
-version: '3.8'
-
-services:
-  backend:
-    build: ./backend
-    container_name: fastapi_app
-    volumes:
-      - ./backend:/app
-    working_dir: /app
-    environment:
-      - PYTHONPATH=/app/src
-    ports:
-      - "8000:8000"
-    networks:
-      - app-network
-    env_file:
-      - ./backend/.env
-      
-  frontend:
-    build: ./frontend
-    container_name: nextjs_app
-    volumes:
-      - ./frontend:/app
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://backend:8000
-    depends_on:
-      - backend
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
->>>>>>> 681917abe9693cb4b906a6fee2afc5376f856532
