@@ -40,7 +40,7 @@ export default function Matchmaking() {
 
   // Fetch categories from API
   useEffect(() => {
-    fetch("https://localhost:8000/api/problem/tags")
+    fetch("http://localhost:8000/api/problem/tags")
       .then((res) => res.json())
       .then((data) => setCategories((data.tags ?? []).sort((a: string, b: string) => a.localeCompare(b))))
       .catch(() => setCategories([]))
@@ -95,7 +95,7 @@ export default function Matchmaking() {
       // 1. Run frontend with NODE_TLS_REJECT_UNAUTHORIZED=0 npm run dev
       // 2. Make sure backend is running with SSL certificates
       const protocol = 'wss'; // Use secure WebSockets
-      const host = 'localhost:8000'; // This could come from env config
+      const host = 'localhost:8001'; // This could come from env config
       
       // Create WebSocket connection with token as query param - removed trailing slash
       const socket = new WebSocket(`${protocol}://${host}/ws/queue`);

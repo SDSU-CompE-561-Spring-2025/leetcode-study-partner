@@ -7,7 +7,7 @@ export const API_HOST_BASE_URL: string = process.env.NEXT_PUBLIC_API_URL
   ? process.env.NEXT_PUBLIC_API_URL.endsWith('/') 
     ? process.env.NEXT_PUBLIC_API_URL 
     : `${process.env.NEXT_PUBLIC_API_URL}/`
-  : "https://localhost:8000/";
+  : "http://localhost:8000/";
 
 // NEXT JS AND DOCKER SUCK!!!!
 // PROCESS.ENV does NOT work so hardcoding as a fallback

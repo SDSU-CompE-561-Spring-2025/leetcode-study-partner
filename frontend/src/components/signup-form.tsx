@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { API_HOST_BASE_URL } from "@/lib/constants";
 
 const signUpSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters long"),
@@ -38,7 +39,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
     try {
       const { username, email, password } = data;
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}auth/register`, {
+      await axios.post(`${API_HOST_BASE_URL}auth/register`, {
         username,
         email,
         password,

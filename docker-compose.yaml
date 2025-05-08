@@ -17,10 +17,10 @@ services:
   backend:
     build:
       context: ./backend
-    container_name: meetcode-backend
+    container_name: meetcode-backend-http
     restart: always
     ports:
-      - "8000:8000"  # Adjust port as needed for your backend
+      - "8000:8000"
     depends_on:
       - db
     env_file:
@@ -32,6 +32,27 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    entrypoint: ["./entrypoint-http.sh"]
+
+  backend-https:
+    build:
+      context: ./backend
+    container_name: meetcode-backend-https
+    restart: always
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+    env_file:
+      - ./backend/.env
+    networks:
+      - meetcode-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    entrypoint: ["./entrypoint.sh"]
 
   frontend:
     build:
@@ -44,11 +65,16 @@ services:
       - "3000:3000"  # Adjust port as needed for your frontend
     depends_on:
       - backend
-    #environment:
-      #- NEXT_PUBLIC_API_URL=https://backend:8000/
-      #- NODE_TLS_REJECT_UNAUTHORIZED=0
-      #- NEXTAUTH_URL=http://localhost:3000
-      #- NEXTAUTH_SECRET=secretauth
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000/
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=secretauth
+      - GOOGLE_CLIENT_ID="1020946271955-fm68i5lpttu2uh7boeg4g14n9ep54p5e.apps.googleusercontent.com"
+      - GOOGLE_CLIENT_SECRET="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"
+
+      - GITHUB_CLIENT_ID="Ov23lizCo1J3aR5xHp7Q"
+      - GITHUB_CLIENT_SECRET="931763eb0ea035e3bf8142a8cd893c01f81c6ea9"
     networks:
       - meetcode-network
 

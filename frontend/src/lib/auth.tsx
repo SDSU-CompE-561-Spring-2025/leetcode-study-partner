@@ -1,10 +1,9 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import axios from 'axios';
+export const API_HOST_BASE_URL = process.env.NEXT_PUBLIC_API_HOST_BASE_URL!;
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import axios from 'axios';
-
-export const API_HOST_BASE_URL = process.env.NEXT_PUBLIC_API_HOST_BASE_URL || '';
 
 declare module 'next-auth' {
   interface User {
@@ -15,15 +14,9 @@ declare module 'next-auth' {
   }
 
   interface Session {
-    user?: {
-      name?: string | null;
-      email?: string | null;
-      image?: string | null;
-    };
     accessToken?: string;
     refreshToken?: string;
     error?: string;
-    expires: string;
   }
 }
 
@@ -50,10 +43,6 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Missing username or password");
           }
 
-          if (!API_HOST_BASE_URL) {
-            throw new Error("API host base URL is not configured");
-          }
-
           const data = new URLSearchParams();
           data.append("username", credentials.username);
           data.append("password", credentials.password);
@@ -68,8 +57,7 @@ export const authOptions: NextAuthOptions = {
 
           if (access_token && refresh_token) {
             return {
-              id: credentials.username,
-              name: credentials.username,
+              id: access_token,
               accessToken: access_token,
               refreshToken: refresh_token,
               expiresIn: expires_in,
@@ -84,17 +72,16 @@ export const authOptions: NextAuthOptions = {
       },
     }),
     GitHubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID || '',
-      clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60,
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
@@ -103,17 +90,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account }) {
       if (account?.provider === 'google' || account?.provider === 'github') {
         try {
-          if (!API_HOST_BASE_URL) {
-            console.error("API host base URL is not configured");
-            return false;
-          }
-
-          if (!user.email) {
-            console.error("User email not provided by OAuth provider");
-            return false;
-          }
-
-          const res = await axios.post(`${API_HOST_BASE_URL}/auth/oauth-register`, {
+          const res = await axios.post(`${API_HOST_BASE_URL}auth/oauth-register`, {
             email: user.email,
             username: user.name ?? user.email?.split("@")[0],
             provider: account.provider,
@@ -129,24 +106,21 @@ export const authOptions: NextAuthOptions = {
 
           return false;
         } catch (err) {
-          if (axios.isAxiosError(err)) {
-            const data = err.response?.data as { msg?: string } | undefined;
-            
+            const error = err as import("axios").AxiosError;
+          
+            const data = error.response?.data as { msg?: string };
+          
             if (data?.msg === "User already exists") {
               return true;
             }
-            
-            console.error("OAuth user registration failed:", {
-              message: err.message,
-              status: err.response?.status,
-              data: err.response?.data,
-            });
-          } else {
-            console.error("Unexpected error during OAuth registration:", err);
-          }
           
-          return false;
-        }
+            console.error("OAuth user registration failed:", {
+              message: error.message,
+              status: error.response?.status,
+              data: error.response?.data,
+            });  
+            return false;
+          }          
       }
       return true;
     },
@@ -167,15 +141,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       try {
-        if (!API_HOST_BASE_URL) {
-          throw new Error("API host base URL is not configured");
-        }
-
-        if (!token.refreshToken) {
-          throw new Error("No refresh token available");
-        }
-
-        const response = await axios.post(`${API_HOST_BASE_URL}/auth/refresh`, {
+        const response = await axios.post(`${API_HOST_BASE_URL}auth/refresh`, {
           refresh_token: token.refreshToken,
         });
 
@@ -202,7 +168,7 @@ export const authOptions: NextAuthOptions = {
   events: {
     async signOut({ token }) {
       try {
-        if (token?.refreshToken && API_HOST_BASE_URL) {
+        if (token?.refreshToken) {
           await axios.post(`${API_HOST_BASE_URL}auth/logout`, {
             refresh_token: token.refreshToken,
           });
@@ -216,7 +182,6 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: '/login',
-    error: '/auth/error',
   },
 };
 
