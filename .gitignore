@@ -79,3 +79,4 @@ instance/
 
 *.session.sql
 backend/certs/
+dockerstuff/
