@@ -1,0 +1,60 @@
+services:
+  db:
+    image: postgres
+    container_name: meetcode-postgres
+    restart: always
+    ports:
+      - "5431:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: chickenjockey
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - meetcode-network
+
+  backend:
+    build:
+      context: ./backend
+    container_name: meetcode-backend
+    restart: always
+    ports:
+      - "8000:8000"  # Adjust port as needed for your backend
+    depends_on:
+      - db
+    env_file:
+      - ./backend/.env
+    networks:
+      - meetcode-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - NEXT_PUBLIC_API_URL=https://backend:8000/
+    container_name: meetcode-frontend
+    restart: always
+    ports:
+      - "3000:3000"  # Adjust port as needed for your frontend
+    depends_on:
+      - backend
+    #environment:
+      #- NEXT_PUBLIC_API_URL=https://backend:8000/
+      #- NODE_TLS_REJECT_UNAUTHORIZED=0
+      #- NEXTAUTH_URL=http://localhost:3000
+      #- NEXTAUTH_SECRET=secretauth
+    networks:
+      - meetcode-network
+
+networks:
+  meetcode-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

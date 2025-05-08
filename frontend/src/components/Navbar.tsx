@@ -71,7 +71,7 @@ interface NavbarItemProps {
 function NavbarItem({ link, label, dropdownItems, clickCallBack }: NavbarItemProps) {
   const pathname = usePathname();
   const isActive = pathname === link;
-  const [isOpen, setIsOpen] = useState(false);
+  const [/*isOpen*/, setIsOpen] = useState(false); // Removed unused state
 
   const toggleDropdown = () => {
     setIsOpen((prev) => !prev);

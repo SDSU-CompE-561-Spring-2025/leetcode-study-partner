@@ -35,7 +35,7 @@ export default function Footer() {
 	);
 }
 
-function GithubIcon(props: any) {
+function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
 	return (
 		<svg
 			{...props}
@@ -55,7 +55,7 @@ function GithubIcon(props: any) {
 	);
 }
 
-function TwitterIcon(props: any) {
+function TwitterIcon(props: React.SVGProps<SVGSVGElement>) {
 	return (
 		<svg
 			{...props}
@@ -74,7 +74,7 @@ function TwitterIcon(props: any) {
 	);
 }
 
-function YoutubeIcon(props: any) {
+function YoutubeIcon(props: React.SVGProps<SVGSVGElement>) {
 	return (
 		<svg
 			{...props}

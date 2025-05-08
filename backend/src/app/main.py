@@ -39,7 +39,9 @@ origins = [
     "http://localhost:8000",
     "https://localhost:8000",
     "ws://localhost:8000",
-    "wss://localhost:8000"
+    "wss://localhost:8000",
+    "http://frontend:3000",
+    "https://frontend:3000"
 ]
 app.add_middleware(
     CORSMiddleware,

@@ -1,0 +1,19 @@
+# Node junk
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Local env
+.env
+.env.local
+.env.development
+.env.production
+
+# Build output (if any)
+.next
+out
+
+# Misc
+.DS_Store
+.git

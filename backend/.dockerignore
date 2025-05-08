@@ -1,0 +1,18 @@
+# Python environment
+__pycache__/
+*.pyc
+.venv
+.venv/
+env/
+venv/
+
+# Local env files
+.env
+*.env
+
+# Docker
+docker-compose.yaml
+
+# Misc
+.DS_Store
+.git

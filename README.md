@@ -40,10 +40,18 @@ docker compose up -d
 docker compose down -v
 ```
 
+### Populate problems table from CSV
+```bash
+docker-compose down -v
+docker-compose up
+hatch run dev
+python -m src.app.scripts.load_data
+```
+
 ### 🚀 Start FastAPI
 
 ```bash
-hatch shell
+hatch shell 
 hatch run dev
 ```
 
