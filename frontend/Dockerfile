@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # syntax=docker.io/docker/dockerfile:1
 
 FROM node:20-alpine AS base
@@ -64,3 +65,26 @@ ENV PORT=3000
 # https://nextjs.org/docs/pages/api-reference/config/next-config-js/output
 ENV HOSTNAME="0.0.0.0"
 CMD ["node", "server.js"]
+=======
+FROM node:18-slim
+
+# Install required build tools
+RUN apt-get update && apt-get install -y \
+  python3 \
+  make \
+  g++ \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install dependencies and force rebuild
+COPY package*.json ./
+RUN npm install
+RUN npm rebuild lightningcss
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
+>>>>>>> 681917abe9693cb4b906a6fee2afc5376f856532

@@ -17,34 +17,44 @@ interface TextChatProps {
 // Function to break long strings without whitespace
 const formatLongText = (text: string, maxLineLength = 20) => {
   const words = text.split(/(\s+)/) // Split including whitespace
-  let result = ''
-  
+  let result = ""
+
   for (let i = 0; i < words.length; i++) {
     const word = words[i]
-    
+
     if (word.trim().length === 0) {
       // Preserve whitespace
       result += word
       continue
     }
-    
+
     if (word.length > maxLineLength) {
       // Break long word into chunks
       let remaining = word
       while (remaining.length > 0) {
         const chunk = remaining.slice(0, maxLineLength)
         remaining = remaining.slice(maxLineLength)
-        result += chunk + (remaining.length > 0 ? '\n' : '')
+        result += chunk + (remaining.length > 0 ? "\n" : "")
       }
     } else {
       result += word
     }
   }
-  
+
   return result
 }
 
 export default function TextChat({ messages, message, setMessage, onSendMessage }: TextChatProps) {
+  const scrollAreaRef = React.useRef<HTMLDivElement>(null)
+
+  // Auto-scroll to bottom when new messages arrive
+  React.useEffect(() => {
+    if (scrollAreaRef.current) {
+      const scrollArea = scrollAreaRef.current
+      scrollArea.scrollTop = scrollArea.scrollHeight
+    }
+  }, [messages])
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
@@ -58,7 +68,7 @@ export default function TextChat({ messages, message, setMessage, onSendMessage 
         <CardTitle className="text-sm">Chat</CardTitle>
       </CardHeader>
       <CardContent className="flex-grow overflow-hidden p-0">
-        <ScrollArea className="h-[300px] w-full pr-3">
+        <ScrollArea className="h-[300px] w-full pr-3" ref={scrollAreaRef}>
           <div className="space-y-4 p-3">
             {messages.length === 0 ? (
               <p className="text-center text-muted-foreground py-8 text-xs">No messages yet</p>

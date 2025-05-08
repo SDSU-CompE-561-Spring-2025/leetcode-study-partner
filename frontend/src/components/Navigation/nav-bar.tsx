@@ -1,13 +1,13 @@
 'use client';
 
 import { useSession, signOut } from 'next-auth/react';
-import Logo from '@/components/Logo';
+import Logo from '@/components/Navigation/Logo';
 import { cn } from '@/lib/utils';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { ThemeSwitcherButton } from '@/components/ThemeSwitcherButton';
-// import UserButton from '@/components/UserButton';
+import { ThemeSwitcherButton } from '@/components/theme-switcher-button';
+// import UserButton from '@/components/user-button';
 import { useState } from 'react';
 
 const navList = [

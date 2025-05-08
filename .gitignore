@@ -78,5 +78,5 @@ env/
 instance/
 
 *.session.sql
-backend/certs/
+backend/test.db
 dockerstuff/

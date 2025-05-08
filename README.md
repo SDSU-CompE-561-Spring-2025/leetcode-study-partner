@@ -44,8 +44,8 @@ docker compose down -v
 ```bash
 docker-compose down -v
 docker-compose up
-hatch run dev
-python -m src.app.scripts.load_data
+hatch run dev  # Run to initialize database (hatch run dev), then close it after running scripts
+python -m src.app.scripts.load_problems # or hatch run python -m src.app.scripts.load_problems
 ```
 
 ### 🚀 Start FastAPI

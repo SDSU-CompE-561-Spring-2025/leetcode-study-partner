@@ -1,191 +1,150 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useUserMedia } from "../hooks/use-user-media"
 import { useWebRTC } from "../hooks/use-webrtc"
-import { useMediaStream } from "../hooks/use-media-stream"
-import TextChat from "../components/text-chat"
-import ProblemCard from "../components/problem-card"
-import DeviceSettings from "../components/device-settings"
-import { User, PhoneOff, MicOff, VideoOff, Mic, Video, Check } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { cn } from "@/lib/utils"
+import { useSignaling } from "../hooks/use-signaling"
+import DeviceSelection from "./device-selection"
+import VideoCall from "./video-call"
+import LeetCodeProblemCard from "./leetcode-problem-card"
 
-export default function VideoWindow() {
-  const [message, setMessage] = useState("")
-  const [messages, setMessages] = useState<{ text: string; sender: "me" | "peer" }[]>([])
-  const [problemCompleted, setProblemCompleted] = useState(false)
-  const [isMuted, setIsMuted] = useState(false)
-  const [isVideoOff, setIsVideoOff] = useState(false)
+// LeetCode problem interface
+export interface LeetCodeProblem {
+  id: string
+  title: string
+  categories: string[]
+  url: string
+}
 
-  // In a real app, this would come from your authentication system and signaling server
-  const [peerUsername, setPeerUsername] = useState("Jane Doe")
+export default function VideoWindow({ matchId, peerId, role }: { matchId: string; peerId: string; role: string }) {
+  // Device selection state
+  const [isDeviceSelectionOpen, setIsDeviceSelectionOpen] = useState(true)
+  const [selectedVideoDevice, setSelectedVideoDevice] = useState<string>("")
+  const [selectedAudioDevice, setSelectedAudioDevice] = useState<string>("")
 
-  // Get local media stream
-  const { stream: localStream, error: mediaError, availableDevices, currentDevices, switchDevice } = useUserMedia()
+  // Status state
+  const [statusMessage, setStatusMessage] = useState("Waiting for peer to connect...")
+  const [peerLeft, setPeerLeft] = useState(false)
 
-  // Set up WebRTC connection
+  // LeetCode problem state 
+  // TODO: crud pull for a random problem with matching category
+  const [problem] = useState<LeetCodeProblem>({
+    id: "LC-704",
+    title: "Binary Search",
+    categories: ["Algorithms", "Arrays", "Binary Search"],
+    url: "https://leetcode.com/problems/binary-search/",
+  })
+
+  // Get user media
+  const { stream: localStream, availableDevices, switchDevice, getStreamWithDevices } = useUserMedia()
+
+  // Set up WebRTC
   const {
-    peerConnection,
-    connectionState,
-    createOffer,
-    createAnswer,
-    setRemoteDescription,
-    addIceCandidate,
     remoteStream,
-  } = useWebRTC(localStream)
+    connectionState,
+    startConnection,
+    toggleAudio,
+    toggleVideo,
+    hangUp,
+    peerConnection,
+  } = useWebRTC(localStream, {
+    matchId,
+    peerId,
+    role,
+  })
 
-  // Connect streams to video elements
-  const localVideoRef = useMediaStream(localStream)
-  const remoteVideoRef = useMediaStream(remoteStream)
+  // ✅ Set up signaling only after device selection is done
+  useSignaling({
+    enabled: !isDeviceSelectionOpen && !!peerConnection,
+    matchId,
+    peerId,
+    role,
+    peerConnection,
+    createOffer: async () => {
+      const offer = await peerConnection!.createOffer()
+      await peerConnection!.setLocalDescription(offer)
+      return offer
+    },
+    createAnswer: async (offer) => {
+      await peerConnection!.setRemoteDescription(new RTCSessionDescription(offer))
+      const answer = await peerConnection!.createAnswer()
+      await peerConnection!.setLocalDescription(answer)
+      return answer
+    },
+    setRemoteDescription: async (desc) => {
+      await peerConnection!.setRemoteDescription(new RTCSessionDescription(desc))
+    },
+    addIceCandidate: async (candidate) => {
+      await peerConnection!.addIceCandidate(new RTCIceCandidate(candidate))
+    },
+  })
 
-  // Handle sending a message
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      setMessages([...messages, { text: message, sender: "me" }])
-      setMessage("")
-      // Here you would also send the message through your signaling channel
+  // Update connection status message
+  useEffect(() => {
+    if (connectionState === "disconnected" || connectionState === "failed" || connectionState === "closed") {
+      setStatusMessage("Peer has left the call")
+      setPeerLeft(true)
+
+      setTimeout(() => {
+        window.location.href = "/matchmaking"
+      }, 3000)
+    }
+  }, [connectionState])
+
+  // Handle device selection
+  const handleDeviceSelect = (kind: "videoinput" | "audioinput", deviceId: string) => {
+    if (kind === "videoinput") {
+      setSelectedVideoDevice(deviceId)
+    } else {
+      setSelectedAudioDevice(deviceId)
     }
   }
 
-  // Handle hanging up
-  const handleHangUp = () => {
-    // In a real app, you would close the connection and navigate away
-    console.log("Hanging up...")
+  // Preview selected devices
+  const previewSelectedDevices = async () => {
+    await getStreamWithDevices(selectedVideoDevice, selectedAudioDevice)
   }
 
-  // Toggle microphone
-  const toggleMicrophone = () => {
-    if (localStream) {
-      const audioTracks = localStream.getAudioTracks()
-      audioTracks.forEach((track) => {
-        track.enabled = !track.enabled
-      })
-      setIsMuted(!isMuted)
-    }
-  }
-
-  // Toggle camera
-  const toggleCamera = () => {
-    if (localStream) {
-      const videoTracks = localStream.getVideoTracks()
-      videoTracks.forEach((track) => {
-        track.enabled = !track.enabled
-      })
-      setIsVideoOff(!isVideoOff)
+  // Start call with selected devices
+  const startCall = async () => {
+    const stream = await getStreamWithDevices(selectedVideoDevice, selectedAudioDevice)
+    if (stream) {
+      setIsDeviceSelectionOpen(false)
+      startConnection()
     }
   }
 
   return (
-    <div className="grid grid-cols-6 gap-4 max-w-7xl mx-auto h-[calc(100vh-12rem)]">
-      {/* Problem card as header - row 1 */}
-      <div className="col-span-6 h-16">
-        <ProblemCard />
-      </div>
-
-      {/* Main content area - row 2 */}
-      <div className="col-span-6 grid grid-cols-6 gap-4 h-[calc(100vh-20rem)]">
-        {/* Video container - 5/6 columns */}
-        <div className="col-span-5 relative bg-card rounded-lg overflow-hidden border border-border">
-          {remoteStream ? (
-            <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <p className="text-card-foreground/70">Waiting for peer to connect...</p>
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
+      <main className="flex-grow container mx-auto px-4 py-6 mb-20">
+        {isDeviceSelectionOpen ? (
+          <DeviceSelection
+            videoDevices={availableDevices.videoinput}
+            audioDevices={availableDevices.audioinput}
+            selectedVideoDevice={selectedVideoDevice}
+            selectedAudioDevice={selectedAudioDevice}
+            onDeviceSelect={handleDeviceSelect}
+            onPreview={previewSelectedDevices}
+            onStartCall={startCall}
+            localStream={localStream}
+          />
+        ) : (
+          <div className="flex flex-col gap-4 max-w-7xl mx-auto">
+            <div className="w-full">
+              <LeetCodeProblemCard problem={problem} />
             </div>
-          )}
-
-          {/* User info and settings in a single container */}
-          <div className="absolute top-4 w-full px-4 flex justify-between items-center">
-            {/* Username display */}
-            <div className="bg-primary/20 text-primary-foreground px-3 py-1.5 rounded-full flex items-center gap-2 backdrop-blur-sm">
-              <User className="h-4 w-4" />
-              <span className="text-sm font-medium">{peerUsername}</span>
-            </div>
-
-            {/* Settings button */}
-            <DeviceSettings
-              availableDevices={availableDevices}
-              currentDevices={currentDevices}
-              onDeviceChange={switchDevice}
+            <VideoCall
+              localStream={localStream}
+              remoteStream={remoteStream}
+              statusMessage={statusMessage}
+              peerLeft={peerLeft}
+              onToggleAudio={toggleAudio}
+              onToggleVideo={toggleVideo}
+              onHangUp={hangUp}
             />
           </div>
-
-          {/* Local video (small overlay) */}
-          <div className="absolute bottom-4 right-4 w-1/5 aspect-video bg-card rounded-lg overflow-hidden shadow-lg border border-border">
-            {localStream ? (
-              <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-xs text-card-foreground/70">Camera off</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Chat - 1/6 columns */}
-        <div className="col-span-1 h-full">
-          <TextChat messages={messages} message={message} setMessage={setMessage} onSendMessage={handleSendMessage} />
-        </div>
-      </div>
-
-      {/* Controls - row 3 */}
-      <div className="col-span-6 flex items-center justify-between bg-card/50 rounded-lg p-3 border border-border">
-        {/* Connection status */}
-        <div className="text-sm text-muted-foreground">
-          Connection status: <span className="font-medium text-foreground">{connectionState}</span>
-        </div>
-
-        {/* Media controls */}
-        <div className="flex items-center gap-2">
-          <Button
-            variant={isMuted ? "destructive" : "secondary"}
-            size="sm"
-            onClick={toggleMicrophone}
-            className="h-8 w-8 p-0"
-          >
-            {isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-          </Button>
-          <Button
-            variant={isVideoOff ? "destructive" : "secondary"}
-            size="sm"
-            onClick={toggleCamera}
-            className="h-8 w-8 p-0"
-          >
-            {isVideoOff ? <VideoOff className="h-4 w-4" /> : <Video className="h-4 w-4" />}
-          </Button>
-        </div>
-
-        {/* Problem completion checkbox */}
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="problem-completed"
-            checked={problemCompleted}
-            onCheckedChange={(checked) => setProblemCompleted(checked as boolean)}
-            className={cn(
-              "h-5 w-5 border-2 border-white/30 rounded-md",
-              problemCompleted ? "bg-amber-500 border-amber-500 text-white" : "bg-transparent",
-            )}
-            // icon={<Check className="h-3.5 w-3.5" />}
-          />
-          <Label htmlFor="problem-completed" className="text-sm cursor-pointer">
-            Problem completed
-          </Label>
-        </div>
-
-        {/* Hang up button */}
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={handleHangUp}
-          className="gap-1 bg-red-600 hover:bg-red-700 text-white"
-        >
-          <PhoneOff className="h-4 w-4" />
-          Hang Up
-        </Button>
-      </div>
+        )}
+      </main>
     </div>
   )
 }

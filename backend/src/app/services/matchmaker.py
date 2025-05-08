@@ -127,7 +127,7 @@ class MatchmakingService:
     async def execute_matchmaking_cycle(self, db: Session):
         """Full matchmaking workflow (run every few seconds)"""
         pairs = await self.find_pairs()
-        print(f"[matchmaker] Pairs found: {pairs}")
+        #print(f"[matchmaker] Pairs found: {pairs}")
         if not pairs:
             return
 
