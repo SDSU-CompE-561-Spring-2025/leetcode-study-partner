@@ -12,12 +12,13 @@ class Problem(Base):
     problem_link = Column(String(512))
     methods_video_link = Column(String(512))
     categories = Column(ARRAY(String(64))) 
+    difficulty = Column(String(16))
 
-    # __table_args__ = (
-    #     CheckConstraint(
-    #         "difficulty in ('Easy', 'Medium', 'Hard')",
-    #         name="check_difficulty",
-    #     ),
-    #  )
+    __table_args__ = (
+        CheckConstraint(
+            "difficulty in ('Easy', 'Medium', 'Hard')",
+            name="check_difficulty",
+        ),
+     )
     
     

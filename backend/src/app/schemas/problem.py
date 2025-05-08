@@ -11,6 +11,7 @@ class ProblemResponse(BaseModel):
     problem_link: AnyHttpUrl
     methods_video_link: AnyHttpUrl
     categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9-\s()]+$", max_length=32)], min_length=0, max_length=8)
+    difficulty: Difficulty
 
     class Config:
         from_attributes = True
@@ -20,6 +21,7 @@ class ProblemCreate(BaseModel):
     problem_link: AnyHttpUrl
     methods_video_link: AnyHttpUrl
     categories: conlist(Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9-\s()]+$", max_length=32)], min_length=0, max_length=8)
+    difficulty: Difficulty
 
     class Config:
         from_attributes = True
