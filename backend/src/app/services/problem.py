@@ -1,6 +1,7 @@
 from app.schemas.problem import ProblemCreate
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from sqlalchemy import text
 
 from app.core.config import get_settings
 from app.models.problem import Problem
@@ -16,7 +17,8 @@ def create_problem(db: Session, problem: ProblemCreate) -> Problem:
         problem_id = problem.problem_id,
         problem_link = str(problem.problem_link),
         methods_video_link = str(problem.methods_video_link),
-        categories = problem.categories
+        categories = problem.categories,
+        difficulty = problem.difficulty
     )
     db.add(db_problem)
     db.commit()
@@ -39,6 +41,7 @@ def update_problem(db: Session, lc_id: int, problem_update: ProblemCreate):
     existing_problem.problem_link = str(problem_update.problem_link),
     existing_problem.methods_video_link = str(problem_update.methods_video_link),
     existing_problem.categories = problem_update.categories
+    existing_problem.difficulty = problem_update.difficulty
     db.commit()
     db.refresh(existing_problem)
     return existing_problem
@@ -49,3 +52,9 @@ def get_problem(db: Session, lc_id: int):
 
 def get_solved_problems(db: Session, user_id: str):
     return db.query(User).filter(User.id == user_id)
+
+def get_unique_tags(db: Session):
+    # Efficiently get unique tags from the ARRAY column using PostgreSQL unnest
+    result = db.execute(text('SELECT DISTINCT UNNEST(categories) as tag FROM problems'))
+    tags = [row[0] for row in result if row[0] is not None and row[0].strip() != '']
+    return tags
