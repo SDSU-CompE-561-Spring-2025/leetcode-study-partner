@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios';
-import { API_HOST_BASE_URL } from '@/lib/constants';
+export const API_HOST_BASE_URL = process.env.NEXT_PUBLIC_API_HOST_BASE_URL!;
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
@@ -87,11 +87,53 @@ export const authOptions: NextAuthOptions = {
     async redirect({ url, baseUrl }) {
       return url.startsWith(baseUrl) ? url : baseUrl;
     },
-    async jwt({ token, user }) {
-      if (user) {
+    async signIn({ user, account }) {
+      if (account?.provider === 'google' || account?.provider === 'github') {
+        try {
+          const res = await axios.post(`${API_HOST_BASE_URL}auth/oauth-register`, {
+            email: user.email,
+            username: user.name ?? user.email?.split("@")[0],
+            provider: account.provider,
+            access_token: account.access_token,
+          });
+
+          if (
+            res.data?.msg === "User already exists" ||
+            res.data?.msg === "OAuth user created"
+          ) {
+            return true;
+          }
+
+          return false;
+        } catch (err) {
+            const error = err as import("axios").AxiosError;
+          
+            const data = error.response?.data as { msg?: string };
+          
+            if (data?.msg === "User already exists") {
+              return true;
+            }
+          
+            console.error("OAuth user registration failed:", {
+              message: error.message,
+              status: error.response?.status,
+              data: error.response?.data,
+            });  
+            return false;
+          }          
+      }
+      return true;
+    },
+
+    async jwt({ token, user, account }) {
+      if (user && account?.type === "credentials") {
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.expiresAt = Date.now() + (user.expiresIn ?? 0) * 1000;
+      }
+
+      if (account?.type !== "credentials") {
+        return token;
       }
 
       if (token.expiresAt && Date.now() < token.expiresAt) {
@@ -115,6 +157,7 @@ export const authOptions: NextAuthOptions = {
         return { ...token, error: 'RefreshAccessTokenError' };
       }
     },
+
     async session({ session, token }) {
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;

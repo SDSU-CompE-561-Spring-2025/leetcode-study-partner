@@ -4,6 +4,8 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from uuid import UUID, uuid4
+from sqlalchemy.orm import joinedload
+from sqlalchemy import or_
 
 from app.core.config import get_settings
 from app.models.match import Match
@@ -15,25 +17,27 @@ settings = get_settings()
 # MATCH CRUD
 
 # CREATE - Create match
-def create_match(db: Session, match_data: MatchCreate):
+def create_match(db: Session, match: MatchCreate):
+    new_match_id: UUID = uuid.uuid4()
     
+    check_same_users(db, match.host_id, match.guest_id)
     
-    check_same_users(db, match_data.host_id, match_data.guest_id)
-    
-    db_match = Match(
-        host_id=match_data.host_id,
-        guest_id=match_data.guest_id,
-        problem_id=match_data.problem_id
+    new_match = Match(
+        match_id=new_match_id,
+        host_id=match.host_id,
+        guest_id=match.guest_id,
+        problem_id=match.problem_id
     )
     
-    db.add(db_match)
+    db.add(new_match)
     db.commit()
-    db.refresh(db_match)
+    db.refresh(new_match)
     
-    print( {
-        "message": "Match created successfully",} )
-    
-    return db_match
+    print({
+        "message": "Match created successfully",
+        "match_id": new_match_id
+    })
+    return new_match
 
 # UPDATE - Start match
 def start_match(db: Session, match_id: UUID):
@@ -65,20 +69,17 @@ def end_match(db: Session, match_id: UUID, match_data: MatchEnd):
 
 # READ - Get match details
 def get_match_details(db: Session, match_id: UUID):
-    return db.query(Match).filter(Match.match_id == match_id).first()
+    return db.query(Match).filter(Match.match_id == match_id).all()
 
 # READ - Get all matches for a user
-def get_all_matches(db: Session, reqBody: UUID):
-    
-    check_user(db, reqBody)
-    
-    return db.query(Match).filter(
+def get_all_matches(db: Session, user_id: UUID, skip: int = 0, limit: int = 100):
+    check_user(db, user_id)
+    return db.query(Match).options(joinedload(Match.problem)).filter(
         or_(
-            Match.host_id == reqBody,
-            Match.guest_id == reqBody
+            Match.host_id == user_id,
+            Match.guest_id == user_id
         )
-    ).all()
-    
+    ).offset(skip).limit(limit).all()
 
 ####### Helper Function #######
 

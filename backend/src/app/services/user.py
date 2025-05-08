@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.auth import decode_access_token, get_password_hash
 from app.core.config import get_settings
-#from app.core.security import verify_password
+from app.schemas.user import OAuthUserCreate
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdateRequest
 
@@ -18,7 +18,7 @@ def create_user(db: Session, user: UserCreate):
     verification_code = "1234" #TODO: Implement verification code
 
     db_user = User(
-        id=str(uuid4()),
+        id=uuid4(),
         username=user.username,
         email= user.email,
         password_hash=hashed_password,
@@ -78,14 +78,37 @@ def get_user_by_username(db: Session, username: str):
     return user
 
 def get_user_by_token(db: Session, token: str) -> User:
-    token_data = decode_access_token(token)
-    username = token_data.username
+    try:
+        token_data = decode_access_token(token)
+        username = token_data.username
 
-    if not username:
-        raise HTTPException(status_code=403, detail="Could not validate credentials")
+        if not username:
+            raise HTTPException(status_code=403, detail="Could not validate credentials")
 
-    user = db.query(User).filter(User.username == username).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        user = db.query(User).filter(User.username == username).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
 
-    return user
+        if user:
+            return user
+    
+    except Exception as jwt_error:
+        user = db.query(User).filter(User.access_token == token).first()
+        if user:
+            return user
+        
+    raise HTTPException(status_code=403, detail="Invalid or expired token")
+
+
+def create_oauth_user(db: Session, user: OAuthUserCreate) -> User:
+    new_user = User(
+        username=user.username,
+        email=user.email,
+        password_hash=None,
+        oauth_provider=user.provider,
+        access_token=user.access_token,
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user

@@ -22,6 +22,7 @@ class UserData(Base):
     last_match_at = Column(DateTime, default=datetime.now(UTC))
     current_streak = Column(Integer, default=0)
     longest_streak = Column(Integer, default=0)
+    last_streak_increment_at = Column(DateTime, nullable=True)
     
     user = relationship("User", back_populates="user_data")
 

@@ -14,3 +14,4 @@ export const config = {
   matcher: ["/dashboard", "/dashboard/:path*", "/matchmaking", "/matchmaking/:path*", 
             "/communcation", "/communcation/:path*", "/review", "/review/:path*"],
 };
+
