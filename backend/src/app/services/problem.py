@@ -18,7 +18,6 @@ def create_problem(db: Session, problem: ProblemCreate) -> Problem:
         problem_link = str(problem.problem_link),
         methods_video_link = str(problem.methods_video_link),
         categories = problem.categories,
-        difficulty = problem.difficulty
     )
     db.add(db_problem)
     db.commit()
