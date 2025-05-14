@@ -70,8 +70,9 @@ CACHEDIR.TAG
 # === FASTAPI / UVICORN SPECIFIC ===
 
 # Environment files
-#.env TODO, uncomment once people understand, jsut gonna make this dev easier
-#.env.*
+# TODO, uncomment once people understand, jsut gonna make this dev easier
+.env
+.env.*
 env/
 
 # Miscellaneous

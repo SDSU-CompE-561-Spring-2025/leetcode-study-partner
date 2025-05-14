@@ -1,0 +1,6 @@
+# Ignore the dockerstuff directory
+dockerstuff/
+node_modules
+.env*
+.git
+!frontend/.env.production

@@ -1,0 +1,19 @@
+#  backend:
+#    build:
+#      context: ./backend
+#    container_name: meetcode-backend-http
+#    restart: always
+#    ports:
+#      - "8000:8000"
+#    depends_on:
+#      - db
+#    env_file:
+#      - ./backend/.env
+#    networks:
+#      - meetcode-network
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#    entrypoint: ["./entrypoint-http.sh"]

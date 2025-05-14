@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     SECRET_KEY_ACCESS: str
     SECRET_KEY_REFRESH: str
+    POSTGRES_USER: str
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

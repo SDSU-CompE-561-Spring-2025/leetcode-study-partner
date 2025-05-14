@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios';
-export const API_HOST_BASE_URL = process.env.NEXT_PUBLIC_API_HOST_BASE_URL!;
+import { API_HOST_BASE_URL } from '@/lib/constants';
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
