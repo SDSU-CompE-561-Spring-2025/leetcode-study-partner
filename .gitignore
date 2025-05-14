@@ -15,11 +15,16 @@
 .DS_Store
 
 # Environment variables for different environments
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Ignore all env files by default
+*.env
+
+# Track production env files (safe for public consumption)
+!**/.env.production
+
+# Still ignore secrets
+frontend/.env.runtime
+backend/.env.runtime
+
 
 # Logs
 npm-debug.log*
@@ -71,9 +76,6 @@ CACHEDIR.TAG
 
 # Environment files
 # TODO, uncomment once people understand, jsut gonna make this dev easier
-.env
-.env.*
-env/
 
 # Miscellaneous
 instance/
