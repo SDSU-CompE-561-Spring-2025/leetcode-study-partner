@@ -83,5 +83,3 @@ instance/
 *.session.sql
 backend/test.db
 dockerstuff/
-
-!frontend/.env.production
