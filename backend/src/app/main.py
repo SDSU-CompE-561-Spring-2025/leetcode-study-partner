@@ -35,8 +35,8 @@ app.include_router(api_router, prefix="")
 # CORS configuration for Docker-only deployment with Nginx proxy
 origins = [
     "https://frontend.localhost",  # Updated for Docker setup with reverse proxy
-    "https://10.0.0.243",  # Updated for Docker setup with reverse proxy
-    #"https://10.0.199",  # Updated for Docker setup with reverse proxy
+    #"https://10.0.0.243",  # Updated for Docker setup with reverse proxy
+    "https://10.0.199",  # Updated for Docker setup with reverse proxy
 ]
 app.add_middleware(
     CORSMiddleware,

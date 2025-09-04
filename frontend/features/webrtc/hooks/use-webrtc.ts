@@ -13,6 +13,7 @@ export function useWebRTC(localStream: MediaStream | null, signalingProps: Signa
   const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null)
   const [connectionState, setConnectionState] = useState<RTCPeerConnectionState | "none">("none")
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
+  const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null)
 
   const remoteStreamRef = useRef<MediaStream | null>(null)
   const pcRef = useRef<RTCPeerConnection | null>(null)
@@ -57,6 +58,41 @@ export function useWebRTC(localStream: MediaStream | null, signalingProps: Signa
       setRemoteStream(new MediaStream(remoteStreamRef.current.getTracks()))
     }
 
+    pc.ondatachannel = (event) => {
+      const channel = event.channel
+      console.log("Received data channel from remote peer:", channel.label, "state:", channel.readyState)
+      setDataChannel(channel)
+      
+      channel.onopen = () => {
+        console.log("Received data channel opened:", channel.label, "state:", channel.readyState)
+      }
+      channel.onclose = () => {
+        console.log("Received data channel closed:", channel.label)
+      }
+      channel.onmessage = (e) => {
+        console.log("Data channel message received:", e.data)
+      }
+      channel.onerror = (error) => {
+        console.error("Received data channel error:", error)
+      }
+    }
+
+    // Create data channel for the host/initiator
+    if (signalingProps.role === "host") {
+      const channel = pc.createDataChannel("yjs-sync", { 
+        ordered: true,
+        maxRetransmits: 3 
+      })
+      console.log("Host created data channel:", channel.label, "state:", channel.readyState)
+      setDataChannel(channel)
+      
+      channel.onopen = () => {
+        console.log("Host data channel opened:", channel.label, "state:", channel.readyState)
+      }
+      channel.onclose = () => console.log("Host data channel closed")
+      channel.onerror = (error) => console.error("Host data channel error:", error)
+    }
+
     // Add local tracks to the peer connection
     localStream.getTracks().forEach((track) => {
       console.log("Adding local track to peer connection:", track.kind)
@@ -67,7 +103,7 @@ export function useWebRTC(localStream: MediaStream | null, signalingProps: Signa
     setConnectionState(pc.connectionState)
 
     return pc
-  }, [localStream])
+  }, [localStream, signalingProps.role])
 
   // Start connection (only once)
   const startConnection = useCallback(() => {
@@ -192,9 +228,14 @@ export function useWebRTC(localStream: MediaStream | null, signalingProps: Signa
     peerConnection,
     connectionState,
     remoteStream,
+    dataChannel,
     startConnection,
     toggleAudio,
     toggleVideo,
     hangUp,
+    createOffer,
+    createAnswer,
+    setRemoteDescription,
+    addIceCandidate,
   }
 }

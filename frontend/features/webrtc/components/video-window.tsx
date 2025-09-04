@@ -7,6 +7,7 @@ import { useSignaling } from "../hooks/use-signaling"
 import DeviceSelection from "./device-selection"
 import VideoCall from "./video-call"
 import LeetCodeProblemCard from "./leetcode-problem-card"
+import CollaborativeEditor from "./collaborative-editor"
 import api from "@/lib/api"
 import { API_HOST_BASE_URL } from "@/lib/constants"
 
@@ -98,6 +99,7 @@ export default function VideoWindow({ matchId, peerId, role }: { matchId: string
     toggleVideo,
     hangUp,
     peerConnection,
+    dataChannel,
   } = useWebRTC(localStream, {
     matchId,
     peerId,
@@ -181,6 +183,7 @@ export default function VideoWindow({ matchId, peerId, role }: { matchId: string
           />
         ) : (
           <div className="flex flex-col gap-4 max-w-7xl mx-auto">
+            {/* Problem Card */}
             <div className="w-full">
               {problemLoading ? (
                 <div className="p-4 border rounded-lg">
@@ -194,15 +197,33 @@ export default function VideoWindow({ matchId, peerId, role }: { matchId: string
                 <LeetCodeProblemCard problem={problem} />
               ) : null}
             </div>
-            <VideoCall
-              localStream={localStream}
-              remoteStream={remoteStream}
-              statusMessage={statusMessage}
-              peerLeft={peerLeft}
-              onToggleAudio={toggleAudio}
-              onToggleVideo={toggleVideo}
-              onHangUp={hangUp}
-            />
+            
+            {/* Main Content - Video and Editor Side by Side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[600px]">
+              {/* Video Call */}
+              <div className="min-h-0">
+                <VideoCall
+                  localStream={localStream}
+                  remoteStream={remoteStream}
+                  statusMessage={statusMessage}
+                  peerLeft={peerLeft}
+                  onToggleAudio={toggleAudio}
+                  onToggleVideo={toggleVideo}
+                  onHangUp={hangUp}
+                />
+              </div>
+              
+              {/* Collaborative Editor */}
+              <div className="min-h-0">
+                <CollaborativeEditor
+                  matchId={matchId}
+                  dataChannel={dataChannel}
+                  onCodeChange={(code) => {
+                    console.log("Code updated:", code.length, "characters")
+                  }}
+                />
+              </div>
+            </div>
           </div>
         )}
       </main>
